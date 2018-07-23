@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">PositioningSample</string>
+    <string name="mode">Mode :</string>
+    <string name="algorithm">Algorithm :</string>
+    <string name="start">Start position</string>
+    <string name="pause">Pause position</string>
+    <string name="resume">Resume position</string>
+    <string name="stop">Stop position</string>
+    <string name="change_floor">Change Floor</string>
+    <string name="change_mode">Change mode</string>
+    <string name="enable_background">Enable background</string>
+    <string name="disable_background">Disable background</string>
+    <string name="error">Error</string>
+    <string name="ok">OK</string>
+
+    <!--定位模式-->
+    <string-array name="location_mode">
+        <item>Normal</item>
+        <item>Background</item>
+        <item>Game</item>
+    </string-array>
+
+    <string name="title_activity_base">BaseActivity</string>
+
+    <string name="permission_tips">Please grant the necessary permissions</string>
+    <string name="help">Help</string>
+    <string name="lacks_permission">The current application is missing the necessary permissions. \n\nPlease click \"Settings\"\ "Permissions\"- to open the required permissions. \n\nFinally, click the Back button twice to return.</string>
+    <string name="quit">Quit</string>
+    <string name="setting">Setting</string>
+    <string name="floors">Floors</string>
+    <string name="note">Note</string>
+    <string name="start_position_first">Please start positioning first.</string>
+
+    <string name="notification_title">Beetrack后台定位功能</string>
+    <string name="notification_text">正在后台运行</string>
+
+    <string name="get_current_location">Getting current location...</string>
+    <string name="please_wait">Please wait</string>
+</resources>

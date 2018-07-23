@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <RelativeLayout
+        android:id="@+id/option_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            style="@style/option_linearLayout"
+            android:id="@+id/mode">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/mode"
+                android:textSize="12sp"
+                android:layout_marginEnd="5dp"/>
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/location_mode_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:entries="@array/location_mode"
+                android:background="@drawable/bg_spinner"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:weightSum="4">
+            <Button
+                android:id="@+id/start"
+                android:text="@string/start"
+                style="@style/position_button" />
+            <Button
+                android:id="@+id/pause"
+                android:text="@string/pause"
+                style="@style/position_button"/>
+            <Button
+                android:id="@+id/resume"
+                android:text="@string/resume"
+                style="@style/position_button"/>
+            <Button
+                android:id="@+id/stop"
+                android:text="@string/stop"
+                style="@style/position_button"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</layout>

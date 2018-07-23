@@ -1,0 +1,10 @@
+*.iml
+/.gradle
+/.idea
+build
+.DS_Store
+local.properties
+maphive.jks
+keystore.properties
+nexus.properties
+app/schemas/*

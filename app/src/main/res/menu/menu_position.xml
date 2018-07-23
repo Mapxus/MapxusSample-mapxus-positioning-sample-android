@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/change_floor"
+        android:title="@string/change_floor" />
+
+    <item android:id="@+id/change_mode"
+        android:title="@string/change_mode"/>
+
+    <item android:id="@+id/enable_background"
+        android:title="@string/enable_background"/>
+
+</menu>
