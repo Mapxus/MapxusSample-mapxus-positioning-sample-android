@@ -67,7 +67,7 @@ MapxusPositioningClient.getInstance(this, "your appid", "your secret");
 
 #### 1.2.4 在需要使用到SDK的module的build.gradle文件中添加SDK依赖
 
-	implementation 'com.mapxus.positioning:positioning:0.2.18'
+	implementation 'com.mapxus.positioning:positioning:0.2.19'
 
 ***注意***：Mapxus Positioning SDK 使用限制minSdkVersion 19，所以请运行在Android4.4或以上
 
