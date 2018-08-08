@@ -1,5 +1,3 @@
-[API reference](https://mapxussample.github.io/mapxus-positioning-sdk-android/)
-
 # Mapxus Positioning Android SDK使用说明
 
 ## 1. 创建工程
@@ -10,37 +8,28 @@
 
 ### 1.2 配置项目
 
-#### 1.2.1 配置项目根目录下的build.gradle文件
+#### 1.2.1 配置项目仓库地址
 
-在build.gradle中添加maven库地址及申请的账号密码
+在项目根目录下的build.gradle中添加jcenter()
 
 ~~~groovy
 allprojects {
 	repositories {
-		maven {
-			credentials {
-				username PARTNER_USER
-				password PARTNER_PASSWORD
-			}
-			url PARTNER_REPOSITORY_URL
-		}
+		jcenter()
 	}
 }
 ~~~
-#### 1.2.2 在**gradle.properties**文件中, 配置仓库地址及账号密码
-在Global或Project的**gradle.properties**文件配置都可以，不过建议在 Global Properties 中配置这样其他项目使用时就不用重复配置
 
+#### 1.2.2 添加Positioning SDK依赖
+在需要使用到Positioning SDK的module的`build.gradle`文件中添加依赖：
+
+~~~groovy
+dependencies {
+	implementation 'com.mapxus.positioning:positioning:0.3.1'
+}
 ~~~
-PARTNER_USER=mapxus
-PARTNER_PASSWORD=f(Qz3%JjGcg9
-PARTNER_REPOSITORY_URL=http://nexus.maphive.io:8081/nexus/content/repositories/partner/
-~~~
 
-如果没有**gradle.properties**文件创建方式：
-
-* Project Properties：项目根目录直接新建**gradle.properties**文件
-* Global Properties：在系统**.gradle**文件下创建新**gradle.properties**文件，Mac默认路径：**/Users/用户名/.gradle**，执行 **touch gradle.properties**
-，Windows默认路径：**C:\Users\用户名\.gradle**
+***注意***：Mapxus Positioning SDK 使用限制minSdkVersion 为19，所以请运行在Android4.4或以上的手机系统
 
 #### 1.2.3 添加授权的 app id 和 secret
 
@@ -67,68 +56,64 @@ MapxusPositioningClient.getInstance(this, "your appid", "your secret");
 ~~~
 
 
-#### 1.2.4 在需要使用到SDK的module的build.gradle文件中添加SDK依赖
-
-	implementation 'com.mapxus.positioning:positioning:0.2.19'
-
-***注意***：Mapxus Positioning SDK 使用限制minSdkVersion 19，所以请运行在Android4.4或以上
-
-#### 1.2.5 在项目清单文件AndroidMainfest.xml里添加定位需要使用的所有权限
+#### 1.2.4 在项目清单文件AndroidMainfest.xml里添加权限
 ~~~xml
-<!-- 获取运营商信息，用于支持提供运营商信息相关的接口-->
+<!--获取运营商信息，用于支持提供运营商信息相关的接口-->
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <!--用于进行网络定位-->
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <!--用于访问GPS定位-->
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+<!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-<!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+<!--这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
 <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-<!-- 访问网络，定位需要上网-->
+<!--访问网络，定位需要上网-->
 <uses-permission android:name="android.permission.INTERNET" />
-<!-- 用于读取手机当前的状态-->
+<!--用于读取手机当前的状态-->
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 <!--读写外部存储的权限，隐式赋予了读外部存储的权限-->
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ~~~
-#### 1.2.6 Android 6.0及以上运行时检查和请求权限，确认应用被授予必要的权限
+#### 1.2.5 Android 6.0及以上权限请求
 
 运行在Android6.0及以上设备如果项目配置targetSdkVersion小于23则会默认授予了所有申请的权限不需要检查和请求权限， 如果 targetSdkVersion >= 23 则需要。[Android在运行时请求权限指南](https://developer.android.com/training/permissions/requesting)
 
-Mapxus Positioning SDK 需要检测获取的权限有：
+**Mapxus Positioning SDK** 需要检测获取的权限有：
 
 *  `Manifest.permission.ACCESS_FINE_LOCATION`
 *  `Manifest.permission.ACCESS_COARSE_LOCATION`
 *  `Manifest.permission.READ_PHONE_STATE`
 *  `Manifest.permission.WRITE_EXTERNAL_STORAGE`
 
-PS：关于如何动态请求权限详细可参考Sample APP
+PS：关于如何动态请求权限详细可参考 Positioning Sample APP
 
 ### 1.3 设备状态的开启
 
-1. 请在整个定位过程中确保网络可用，定位过程需要不断进行网络请求获取最新位置信息
+1. 请在整个定位过程中确保**网络可用**，定位过程需要不断进行网络请求获取最新位置信息
 
-2. 请开启WIFI，定位过程需要不断获取WIFI信息进行定位
+2. 请**开启WIFI**，定位过程需要不断获取WIFI信息进行定位
 
-3. Android6.0及以上设备出现在原生系统和部分第三方、厂商定制系统因没有开启GPS导致无法获取WIFI信息而不能进行定位的问题，所以Mapxus Positioning SDK在Android6.0及以上设备运行时必须开启GPS以防止无法使用
+3. Android6.0及以上设备出现在原生系统和部分第三方、厂商定制系统因没有开启GPS导致无法获取WIFI信息而不能进行定位的问题，所以Mapxus Positioning SDK在Android6.0及以上设备运行时**必须开启GPS**以防止无法使用
 
-4. 确保使用Mapxus Positioning SDK的设备具有气压传感器，否则无法使用
+4. 确保使用Mapxus Positioning SDK的设备具有**气压传感器**，否则无法使用
+
+5. **Mapxus Positioning SDK 0.3.0** 版本之后加入室内外切换定位，目前该功能只能在支持原始GNSS测量的手机上使用。（大部分生产于2016年及以后系统为Android 7.0及以上）[点击查看支持的设备列表](https://developer.android.com/guide/topics/sensors/gnss#supported-devices)。 对于不支持室内外切换的设备，会默认是在室内中进行定位。或者可以使用提供的工具类 `Utils.isSupportGnss(Context context)`判断。
 
 ## 2.获取室内定位
 
 ### 2.1 获取实例
 
-以下为获取IndoorPositionerClient的示例代码：
+以下为获取MapxusPositioningClient的示例代码（在主线程中调用）：
 
 ~~~java
-//在主线程中声明MapxusPositioningClient对象
+//声明MapxusPositioningClient对象
 public MapxusPositioningClient mMapxusPositioningClient;
 
 //获取MapxusPositioningClient定位服务客户端的实例
 mMapxusPositioningClient = MapxusPositioningClient.getInstance(getApplicationContext());
 
-//设置定位回调监听
+//设置定位信息回调监听
 mMapxusPositioningClient.setPositioningListener(listener);
 ~~~
 
@@ -164,7 +149,7 @@ private MapxusPositioningListener listener = new MapxusPositioningListener() {
 	@Override
 	public void onError(ErrorInfo errorInfo) {
 		//错误信息回调，各类错误信息解释请查看API文档
-		//开始定位后出现的错误信息的返回 errorCode == ERROR_WARNING 时定位引擎会抛出此错误信息后仍继续运行
+		//开始定位后出现的错误信息的返回 errorCode == WARNING 时定位引擎会抛出此错误信息后仍继续运行
 		//其余错误返回后会自动销毁定位引擎，再使用须重新实例化IndoorLocatorClient 定位成功前初始化可能出现多个错误返回
 	}
 
@@ -238,6 +223,13 @@ mMapxusPositioningClient.enableBackgroundPositioning(1, notification);
 ~~~java
 //app返回前台后可关闭后台定位服务
 mMapxusPositioningClient.disableBackgroundPositioning(true);
+~~~
+
+### 2.12 定位过程中切换定位楼层
+
+~~~java
+//定位过程中切换定位楼层
+mMapxusPositioningClient.changeFloor(positioningFloor);
 ~~~
 
 
