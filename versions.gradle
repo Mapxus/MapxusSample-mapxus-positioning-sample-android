@@ -7,14 +7,12 @@ versions.constraint_layout = "1.1.0"
 versions.junit = "4.12"
 versions.espresso = "3.0.1"
 versions.atsl_runner = "1.0.1"
-versions.beemap = "0.3.3"
-versions.positioning = "0.2.19"
+versions.beemap = "2.0.0-beta"
+versions.positioning = "0.3.2"
 def deps = [:]
 
 def mapxus = [:]
-mapxus.beemap = "com.mapxus.beemapsdk:beemap:$versions.beemap"
-mapxus.beemapAPI = "com.mapxus.beemapsdk:beemap-api:$versions.beemap"
-mapxus.mapxusAuth = "com.mapxus.sdk:sdk-auth:$versions.beemap"
+mapxus.beemap = "com.mapxus.map:mapxusmap:$versions.beemap"
 mapxus.positioning = "com.mapxus.positioning:positioning:$versions.positioning"
 deps.mapxus = mapxus
 
@@ -54,12 +52,5 @@ def addAllRepos(RepositoryHandler handler) {
     handler.google()
     handler.jcenter()
     handler.maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    handler.maven {
-        credentials {
-            username PARTNER_USER
-            password PARTNER_PASSWORD
-        }
-        url PARTNER_REPOSITORY_URL
-    }
 }
 ext.addAllRepos = this.&addAllRepos

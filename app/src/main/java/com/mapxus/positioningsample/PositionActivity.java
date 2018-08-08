@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
@@ -11,52 +12,65 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.mapxus.beemap.BeeMap;
-import com.mapxus.beemap.BeeMapView;
-import com.mapxus.beemap.CameraUpdateFactory;
-import com.mapxus.beemap.interfaces.OnMapReadyCallback;
-import com.mapxus.beemap.model.CameraPosition;
-import com.mapxus.beemap.model.IndoorBuilding;
-import com.mapxus.beemap.model.LatLng;
-import com.mapxus.beemap.model.Style;
-import com.mapxus.beemap.model.overlay.BitmapDescriptor;
-import com.mapxus.beemap.model.overlay.BitmapDescriptorFactory;
-import com.mapxus.beemap.model.overlay.Marker;
-import com.mapxus.beemap.model.overlay.MarkerOptions;
+import com.google.gson.Gson;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.MarkerView;
+import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapxus.map.MapViewProvider;
+import com.mapxus.map.MapxusMap;
+import com.mapxus.map.impl.MapboxMapViewProvider;
+import com.mapxus.map.interfaces.OnMapxusMapReadyCallback;
+import com.mapxus.map.model.IndoorBuilding;
+import com.mapxus.map.model.Style;
 import com.mapxus.positioning.config.MapxusPositioningOption;
 import com.mapxus.positioning.model.info.ErrorInfo;
 import com.mapxus.positioning.model.info.LocationMode;
 import com.mapxus.positioning.model.info.PositioningState;
-import com.mapxus.positioning.model.location.PositioningBuilding;
 import com.mapxus.positioning.model.location.PositioningFloor;
 import com.mapxus.positioning.model.location.PositioningLocation;
 import com.mapxus.positioning.positioning.api.MapxusPositioningClient;
 import com.mapxus.positioning.positioning.api.MapxusPositioningListener;
 
+import com.mapxus.positioning.utils.Utils;
 import com.mapxus.positioningsample.databinding.ActivityPositionBinding;
+import com.mapxus.services.BuildingSearch;
+import com.mapxus.services.model.building.BuildingDetailResult;
+import com.mapxus.services.model.building.BuildingResult;
+import com.mapxus.services.model.building.IndoorBuildingInfo;
+
+import timber.log.Timber;
 
 public class PositionActivity extends BaseActivity implements View.OnClickListener {
-
-    private static final String TAG = "PositionActivity";
+    
     private ActivityPositionBinding mPositionBinding;
-    private BeeMap mBeeMap;
-    private BeeMapView mBeeMapView;
 
-    private MapxusPositioningClient mMapxusPositioningClient;
+    private MapboxMap mMapboxMap; //Mapbox Map
+    private MapView mMapView;
 
-    private Marker mPositionMarker; //定位图标
+    private MapxusMap mMapxusMap; //Mapxus Map
+    private MapViewProvider mMapViewProvider;
+    private MarkerView mPositionMarkerView; //定位图标
+
+    private MapxusPositioningClient mMapxusPositioningClient;//定位服务客户端
+
     private float mCurrentRotation; //定位角度
-    private PositioningBuilding mPositionBuilding; //定位建筑
-    private PositioningFloor mPositionFloor; //定位楼层
-    private PositioningLocation mPositionLocation; //定位位置
-    private String mMapFloor;
-    private boolean isFirstShow = true;
+    private PositioningLocation mPositionLocation; //定位位置(包括floor、，buildingId, buildingId为空则定位到室外)
+
+    private String mMapFloor; //当前地图的显示楼层
+    private IndoorBuildingInfo mPositionBuildingInfo; //定位建筑详细信息
+    private boolean isShowInCenter = true; //第一次显示切换地图中心点位置
+
+    private PositionViewModel mPositionViewModel;
 
     private NotificationManager mNotificationManager;
 
@@ -67,55 +81,70 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
         mPositionBinding = DataBindingUtil.setContentView(this, R.layout.activity_position);
-
+        mPositionViewModel = new PositionViewModel();
         initMap(savedInstanceState);
         initView();
     }
 
     /**
      * 初始化地图
+     * 添加地图楼层变换监听
      *
      * @param savedInstanceState
      */
     private void initMap(Bundle savedInstanceState) {
-        mBeeMapView = mPositionBinding.map;
-        mBeeMapView.onCreate(savedInstanceState);
-        mBeeMapView.setStyle(Style.MAPPYBEE);
-        mBeeMapView.getMapAsync(new OnMapReadyCallback() {
+        mMapView = mPositionBinding.map;
+        mMapViewProvider = new MapboxMapViewProvider(this, mMapView);
+        mMapViewProvider.setStyle(Style.MAPPYBEE); //set indoor map style
+        mMapView.onCreate(savedInstanceState);
+        mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onMapReady(BeeMap beeMap) {
-                mBeeMap = beeMap;
-                mBeeMap.addOnCameraChangeListener(new BeeMap.OnCameraChangeListener() {
+            public void onMapReady(MapboxMap mapboxMap) {
+                mMapboxMap = mapboxMap; //获取地图准备好后的MapboxMap实例
+            }
+        });
+        mMapViewProvider.getMapxusMapAsync(new OnMapxusMapReadyCallback() {
+            @Override
+            public void onMapxusMapReady(MapxusMap mapxusMap) {
+                mMapxusMap = mapxusMap; //获取室内地图准备好后的MapxusMap实例
+                //楼层变化时marker的显示
+                mMapxusMap.addOnFloorChangeListener(new MapxusMap.OnFloorChangeListener() {
                     @Override
-                    public void onCameraChange(CameraPosition cameraPosition) {
-                        //每次地图旋转图标角度须跟着一起旋转
-                        if (null != mPositionMarker) {
-                            mPositionMarker.setRotateAngle(mCurrentRotation -
-                                    mBeeMap.getCameraPosition().bearing);
+                    public void onFloorChange(IndoorBuilding indoorBuilding, String floorCode) {
+                        boolean isFirst = (null == mMapFloor); //室内地图首次显示，切换建筑和楼层，未显示地图前切换建筑和楼层是无效的
+                        mMapFloor = floorCode;
+                        if (null != mPositionLocation) {
+                            if (isFirst) { //首次显示室内地图切换建筑和楼层
+                                if (null != mPositionLocation.getBuildingId()) {
+                                    mMapxusMap.switchBuilding(mPositionLocation.getBuildingId());
+                                    Timber.d("Switch position building when indoor map first show.");
+                                }
+                                if (null != mPositionLocation.getFloor()) {
+                                    mMapxusMap.switchFloor(mPositionLocation.getFloor().getCode());
+                                    Timber.d("Switch position floor when map first show.");
+                                }
+                            }
+                            //楼层不同则不显示定位图标
+                            if (mPositionBinding.optionContent.getIsIndoor()) {
+                                if (null != mPositionLocation.getFloor() &&
+                                        floorCode.equals(mPositionLocation.getFloor().getCode())) {
+                                    updatePositionMarker(new LatLng(mPositionLocation.getLat(),
+                                            mPositionLocation.getLon()));
+                                } else {
+                                    Timber.d("Floor change. Map floor is different from positioning floor, remove marker");
+                                    removePositionMarker();
+                                }
+                            }
                         }
                     }
                 });
-                //楼层变化时marker的显示
-                mBeeMap.addOnFloorChangeListener(new BeeMap.OnFloorChangeListener() {
+                //地图室内外切换时, 地图楼层重置为空
+                mMapxusMap.addOnBuildingChangeListener(new MapxusMap.OnBuildingChangeListener() {
                     @Override
-                    public void onFloorChange(IndoorBuilding indoorBuilding, String floor) {
-                        boolean isFirst = (null == mMapFloor); //室内地图首次显示，切换建筑和楼层，未显示前切换建筑和楼层是无效的
-                        mMapFloor = floor;
-                        if (isFirst) {
-                            if (null != mPositionBuilding) {
-                                mBeeMap.switchBuilding(mPositionBuilding.getId());
-                            }
-                            if (null != mPositionFloor) {
-                                mBeeMap.switchFloor(mPositionFloor.getCode());
-                            }
-                        }
-                        if (null != mPositionLocation && null != mPositionFloor) {
-                            if (floor.equals(mPositionFloor.getCode())) {
-                                updatePositionMarker(new LatLng(mPositionLocation.getLat(),
-                                        mPositionLocation.getLon())); //楼层切到定位位置时显示marker
-                            } else {
-                                removePositionMarker(); //楼层切换到非定位楼层移除marker
-                            }
+                    public void onBuildingChange(IndoorBuilding indoorBuilding) {
+                        if (null == indoorBuilding) {
+                            mMapFloor = null;
+                            Timber.d("Map change to outdoor.");
                         }
                     }
                 });
@@ -132,6 +161,11 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         mPositionBinding.optionContent.pause.setOnClickListener(this);
         mPositionBinding.optionContent.resume.setOnClickListener(this);
         mPositionBinding.optionContent.stop.setOnClickListener(this);
+        mPositionBinding.optionContent.setIsIndoor(true);
+        mPositionBinding.optionContent.setIsRunning(false);
+        mPositionBinding.optionContent.version.setText("version: " + BuildConfig.VERSION_NAME);
+        boolean isSupportGnss = Utils.isSupportGnss(this);
+        Timber.i("Is support gnss %s", isSupportGnss);
         enableStartUI();
     }
 
@@ -167,8 +201,10 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         showProgressDialog(R.string.get_current_location, R.string.please_wait);
         String mode = mPositionBinding.optionContent.locationModeSpinner.getSelectedItem().toString();
 
-        mMapxusPositioningClient = MapxusPositioningClient.getInstance(this, "977b5b54", "F6d7666@"); //定位初始化，获取实例
-        mMapxusPositioningClient.setPositioningListener(indoorPositionerListener); //配置定位信息回调监听
+        //可以在初始化时传入appId 和 secret 或者与地图初始化一样在AndroidManifest.xml 中配置
+        mMapxusPositioningClient = MapxusPositioningClient.getInstance(this); //定位初始化，获取实例（已在AndroidManifest.xml中配置appId与secret）
+        // mMapxusPositioningClient = MapxusPositioningClient.getInstance(this, "your appId", "your secret"); //直接在初始时传入appId与secret
+        mMapxusPositioningClient.setPositioningListener(mMapxusPositioningListener); //配置定位信息回调监听
 
         MapxusPositioningOption option = new MapxusPositioningOption();
         option.setMode(LocationMode.fromString(mode)); //配置定位模式。不配置默认为Normal
@@ -176,7 +212,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         mMapxusPositioningClient.setPositioningOption(option); //配置定位参数，不配置则会使用默认参数开始定位
 
         mMapxusPositioningClient.start(); //开始定位
-        Log.d(TAG, "Call start()");
+        Timber.d("Call start()");
     }
 
     /**
@@ -187,7 +223,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         if (null != mMapxusPositioningClient) {
             removePositionMarker();
             mMapxusPositioningClient.pause();
-            Log.d(TAG, "Call pause()");
+            Timber.d("Call pause()");
         }
     }
 
@@ -199,7 +235,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         if (null != mMapxusPositioningClient) {
             showProgressDialog(R.string.get_current_location, R.string.please_wait);
             mMapxusPositioningClient.resume();
-            Log.d(TAG, "Call resume()");
+            Timber.d("Call resume()");
         }
     }
 
@@ -210,14 +246,14 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         if (null != mMapxusPositioningClient) {
             removePositionMarker();
             mMapxusPositioningClient.stop();
-            Log.d(TAG, "Call stop()");
+            Timber.d("Call stop()");
         }
     }
 
     /**
      * 定位状态、错误信息和定位结果返回监听
      */
-    private MapxusPositioningListener indoorPositionerListener = new MapxusPositioningListener() {
+    private MapxusPositioningListener mMapxusPositioningListener = new MapxusPositioningListener() {
         /**
          * 调用成功后状态返回对应
          * start() >>>>> RUNNING
@@ -231,35 +267,41 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
             //定位过程中的各类状态返回
             switch (positioningState) {
                 case WAITING: //等待数据加载中
-                    Log.i(TAG, ">>>>> Waiting position....");
+                    Timber.i(">>>>> Waiting position....");
                     break;
                 case RUNNING: //定位成功，定位服务运行中
-                    Log.i(TAG, ">>>>> Start position");
+                    dismissProgressDialog();
+                    mPositionBinding.optionContent.setIsRunning(true);
+                    Timber.i(">>>>> Start position");
                     break;
                 case PAUSED: //定位服务暂停
-                    isFirstShow = true;
+                    mPositionBinding.optionContent.setIsRunning(false);
+                    isShowInCenter = true;
                     mPositionLocation = null;
-                    mPositionFloor = null;
-                    mPositionBuilding = null;
-                    Log.i(TAG, ">>>>> Pause position");
+                    Timber.i(">>>>> Pause position");
                     break;
                 case STOPPED:
-                    isFirstShow = true;
+                    mPositionBinding.optionContent.setIsRunning(false);
+                    isShowInCenter = true;
                     mMapxusPositioningClient = null;
                     mPositionLocation = null;
-                    mPositionFloor = null;
-                    mPositionBuilding = null;
                     mMapxusPositioningClient = null;
-                    Log.i(TAG, ">>>>> Stop position");
+                    Timber.i(">>>>> Stop position");
                     break;
             }
         }
 
+        /**
+         * WARNING: 为提示信息，出现此类信息仅为提示用户，不会销毁定位服务
+         * ERROR_***: 错误信息，出现错误信息定位服务也会销魂，须重新开始定位
+         * @param errorInfo 错误信息提示
+         */
+
         @Override
         public void onError(ErrorInfo errorInfo) {
             //定位过程中错误信息返回
-            Log.e(TAG, errorInfo.getErrorMessage());
-            if (errorInfo.getErrorCode() == ErrorInfo.ERROR_WARNING) {
+            Timber.e(errorInfo.getErrorMessage());
+            if (errorInfo.getErrorCode() == ErrorInfo.WARNING) {
                 Toast.makeText(PositionActivity.this, errorInfo.getErrorMessage(), Toast.LENGTH_SHORT).show();
             } else {
                 enableStartUI();
@@ -282,44 +324,59 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         public void onOrientationChange(float v) {
             //手机朝向信息, 顺时针0-360
             mCurrentRotation = v; //保存最新的方向信息
-            if (null != mBeeMap) {
+            if (null != mMapboxMap) {
                 updatePositionMarker(null);
             }
         }
 
+        /**
+         *  定位位置信息返回
+         *  室内：返回buildingId, floor, location
+         *  室外：buildingId == null, floor == null, 返回location
+         * @param beeTrackLocation
+         */
+
         @Override
         public void onLocationChange(PositioningLocation beeTrackLocation) {
-            dismissProgressDialog();
             //定位的位置返回
-            mPositionLocation = beeTrackLocation;
             LatLng latLng = new LatLng(beeTrackLocation.getLat(), beeTrackLocation.getLon());
-            if (isFirstShow && mBeeMap != null) {
-                isFirstShow = false;
-                mBeeMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f)); //第一次显示将地图中心点移动到定位位置并放大
-            }
-            if (null != mPositionFloor && mPositionFloor.getCode().equals(mMapFloor)) {//当前楼层在定位楼层时显示marker
-                updatePositionMarker(latLng);
-            } else {
-                removePositionMarker();
-            }
-        }
+            Timber.d("Positioning result %s", new Gson().toJson(beeTrackLocation));
+            if (null != mMapxusMap) {
+                if (null != beeTrackLocation.getBuildingId() &&
+                        (mPositionLocation == null || mPositionLocation.getBuildingId() == null
+                        || !beeTrackLocation.getBuildingId().equals(mPositionLocation.getBuildingId()))) {//building change
+                    Timber.d("Building change to %s", beeTrackLocation.getBuildingId());
+                    mMapxusMap.switchBuilding(beeTrackLocation.getBuildingId());
+                    mPositionBinding.optionContent.setIsIndoor(true);
+                    isShowInCenter = true;
+                    queryBuildingInfo(beeTrackLocation.getBuildingId()); //query building detail info
+                } else if (null == beeTrackLocation.getBuildingId() && mPositionBinding.optionContent.getIsIndoor()) { //change to outdoor
+                    mPositionBinding.optionContent.setIsIndoor(false);
+                    isShowInCenter = true;
+                    Timber.d("Location change to outdoor");
+                    Toast.makeText(PositionActivity.this, "Location change to outdoor", Toast.LENGTH_SHORT).show();
+                }
+                if (null != beeTrackLocation.getFloor() &&
+                        (mPositionLocation == null || mPositionLocation.getFloor() == null ||
+                        !beeTrackLocation.getFloor().getId().equals(mPositionLocation.getFloor().getId()))) {
+                    mMapxusMap.switchFloor(beeTrackLocation.getFloor().getCode());
+                    Timber.d("Floor change to %s", beeTrackLocation.getFloor().getCode());
+                }
 
-        @Override
-        public void onBuildingChange(PositioningBuilding beeTrackBuilding) {
-            //定位的建筑变化
-            isFirstShow = true; //切换建筑也须移动放大地图
-            mPositionBuilding = beeTrackBuilding;
-            if (null != mBeeMap) {
-                mBeeMap.switchBuilding(beeTrackBuilding.getId());//切换地图建筑
-            }
-        }
+                mPositionLocation = beeTrackLocation;
 
-        @Override
-        public void onFloorChange(PositioningFloor beeTrackFloor) {
-            //定位的楼层
-            mPositionFloor = beeTrackFloor;
-            if (null != mBeeMap) {
-                mBeeMap.switchFloor(beeTrackFloor.getCode()); //切换地图显示楼层到定位楼层
+                //show outdoor or indoor marker
+                if (!mPositionBinding.optionContent.getIsIndoor() ||
+                        (mPositionBinding.optionContent.getIsIndoor() && mPositionLocation.getFloor().getCode().equals(mMapFloor))) {
+                    updatePositionMarker(latLng);
+                } else {
+                    removePositionMarker();
+                }
+
+                if (isShowInCenter) {
+                    isShowInCenter = false;
+                    mMapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.5f)); //第一次显示将地图中心点移动到定位位置并放大
+                }
             }
         }
     };
@@ -327,32 +384,71 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     /**
      * 修改maker的角度和经纬度
      *
-     * @param latLng marker经纬度
+     * @param latLng marker经纬度 latLng == null only update marker's rotation
      */
     private void updatePositionMarker(LatLng latLng) {
-        if (null != latLng) { //改变marker经纬度
-            if (null == mPositionMarker) { //第一次创建marker
-                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.arrow);
-                mPositionMarker = mBeeMap.addMarker(new MarkerOptions()
-                        .icon(icon).position(latLng).anchor(0.5f, 0.5f));
-                mBeeMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latLng.latitude + 0.000001, latLng.longitude + 0.0000001)));
+        if (null != latLng) {
+            if (null == mPositionMarkerView) {
+                createPosisionMarker(latLng);
             } else {
-                mPositionMarker.setPosition(latLng);
+                mPositionMarkerView.setPosition(latLng);
             }
         }
-        if (null != mPositionMarker) { //只改变角度，角度的变化会很频繁
-            mPositionMarker.setRotateAngle(mCurrentRotation - mBeeMap.getCameraPosition().bearing);
+        if (null != mPositionMarkerView) {
+            mPositionMarkerView.setRotation((float) (mCurrentRotation -
+                    mMapboxMap.getCameraPosition().bearing));
         }
+    }
+
+    private void createPosisionMarker(LatLng latLng) {
+        mPositionMarkerView = mMapboxMap.addMarker(new MarkerViewOptions()
+                .icon(IconFactory.getInstance(this).fromResource(R.drawable.arrow))
+                .position(latLng).anchor(0.5f, 0.5f).rotation(mCurrentRotation));
+        mMapboxMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     /**
      * 移除定位marker
      */
     private void removePositionMarker() {
-        if (null != mPositionMarker) {
-            mPositionMarker.remove();
-            mPositionMarker = null;
+        if (null != mPositionMarkerView) {
+            mPositionMarkerView.remove();
+            Timber.d("Remove position marker");
+            mPositionMarkerView = null;
         }
+    }
+
+    /**
+     * 通过 buildingId 查询建筑的详细信息
+     * Query indoorBuildingInfo to get all floors of positioning building
+     *
+     * @param buildingId
+     */
+    private void queryBuildingInfo(String buildingId) {
+        mPositionBuildingInfo = null;
+        mPositionViewModel.searchBuildingById(buildingId, new BuildingSearch.BuildingSearchResultListener() {
+            @Override
+            public void onGetBuildingResult(BuildingResult buildingResult) {
+            }
+
+            @Override
+            public void onGetBuildingDetailResult(BuildingDetailResult buildingDetailResult) {
+                if (buildingDetailResult.status != 0) {
+                    String msg = "Get building info failed " + buildingDetailResult.error.toString();
+                    Toast.makeText(PositionActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    Timber.e(msg);
+                    return;
+                }
+                if (buildingDetailResult.getIndoorBuildingInfo() == null) {
+                    String msg = "Get building info failed: Building no found.";
+                    Toast.makeText(PositionActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    Timber.e(msg);
+                    return;
+                }
+                mPositionBuildingInfo = buildingDetailResult.getIndoorBuildingInfo();
+                Timber.d("Get building info of %s", mPositionBuildingInfo.getBuildingId());
+            }
+        });
     }
 
 
@@ -366,21 +462,24 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.change_floor:
-                //定位过程中改变定位楼层
-                if (null != mPositionBuilding) {
-                    final String[] floors = getFloors(mPositionBuilding);
-                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(PositionActivity.this);
+                //Change positioning floor during positioning
+                if (null != mPositionLocation && null != mPositionBuildingInfo) {
+                    final String[] floors = getFloors(mPositionBuildingInfo);
+                    Builder builder = new Builder(PositionActivity.this);
                     builder.setTitle(getString(R.string.floors));
                     builder.setItems(floors, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            mMapxusPositioningClient.changeFloor(mPositionBuilding.getFloors().get(i));
-                            mBeeMap.switchFloor(floors[i]);
-                            Log.d(TAG, "Change floor to " + floors[i]);
+                            PositioningFloor beeTrackFloor = new PositioningFloor
+                                    (floors[i], mPositionBuildingInfo.getFloors()[i].getId());
+                            mMapxusPositioningClient.changeFloor(beeTrackFloor);
+                            mMapxusMap.switchFloor(floors[i]);
+                            Timber.d("Change position floor to %s", floors[i]);
                         }
                     }).create().show();
                 } else {
-                    new android.app.AlertDialog.Builder(PositionActivity.this).setTitle(R.string.note).setMessage(R.string.start_position_first)
+                    new Builder(PositionActivity.this).setTitle(R.string.note)
+                            .setMessage(R.string.start_position_first)
                             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -408,14 +507,17 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         return super.onOptionsItemSelected(item);
     }
 
-    private String[] getFloors(PositioningBuilding positioningBuilding) {
-        String[] floors = new String[positioningBuilding.getFloors().size()];
-        for (int i = 0; i < positioningBuilding.getFloors().size(); i++) {
-            floors[i] = positioningBuilding.getFloors().get(i).getCode();
+    private String[] getFloors(IndoorBuildingInfo indoorBuildingInfo) {
+        String[] floors = new String[indoorBuildingInfo.getFloors().length];
+        for (int i = 0; i < indoorBuildingInfo.getFloors().length; i++) {
+            floors[i] = indoorBuildingInfo.getFloors()[i].getCode();
         }
         return floors;
     }
 
+    /**
+     * 未开始定位前时可点击的按钮变换
+     */
     private void enableStartUI() {
         mPositionBinding.optionContent.start.setEnabled(true);
         mPositionBinding.optionContent.pause.setEnabled(false);
@@ -423,6 +525,9 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         mPositionBinding.optionContent.stop.setEnabled(false);
     }
 
+    /**
+     * pause positioning 后可点击的按钮变换
+     */
     private void enablePauseUI() {
         mPositionBinding.optionContent.start.setEnabled(false);
         mPositionBinding.optionContent.pause.setEnabled(false);
@@ -430,6 +535,9 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         mPositionBinding.optionContent.stop.setEnabled(true);
     }
 
+    /**
+     * 运行中可点击的按钮
+     */
     private void enableRunningUI() {
         mPositionBinding.optionContent.start.setEnabled(false);
         mPositionBinding.optionContent.pause.setEnabled(true);
@@ -440,31 +548,31 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onStart() {
         super.onStart();
-        mBeeMapView.onStart();
+        mMapView.onStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mBeeMapView.onResume();
+        mMapView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mBeeMapView.onPause();
+        mMapView.onPause();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mBeeMapView.onStop();
+        mMapView.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBeeMapView.onDestroy();
+        mMapView.onDestroy();
         //退出时销毁定位
         if (null != mMapxusPositioningClient) {
             mMapxusPositioningClient.stop();

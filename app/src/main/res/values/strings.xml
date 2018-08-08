@@ -2,6 +2,9 @@
     <string name="app_name">PositioningSample</string>
     <string name="mode">Mode :</string>
     <string name="algorithm">Algorithm :</string>
+    <string name="is_indoor">Is indoor:</string>
+    <string name="true_txt">true</string>
+    <string name="false_txt">false</string>
     <string name="start">Start position</string>
     <string name="pause">Pause position</string>
     <string name="resume">Resume position</string>

@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
-    
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="isIndoor"
+            type="boolean"/>
+        <variable
+            name="isRunning"
+            type="boolean"/>
+    </data>
     <RelativeLayout
         android:id="@+id/option_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:id="@+id/version"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="10dp"/>
 
         <LinearLayout
             style="@style/option_linearLayout"
@@ -26,6 +42,25 @@
                 android:entries="@array/location_mode"
                 android:background="@drawable/bg_spinner"/>
 
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/option_linearLayout"
+            android:id="@+id/indoor_layout"
+            android:layout_below="@+id/mode"
+            android:visibility="@{isRunning ?  View.VISIBLE : View.GONE}">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/isIndoor"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/is_indoor"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/indoor"
+                android:textColor="@color/colorPrimary"
+                android:text="@{isIndoor ? @string/true_txt : @string/false_txt}"/>
         </LinearLayout>
 
         <LinearLayout
@@ -52,6 +87,7 @@
                 android:text="@string/stop"
                 style="@style/position_button"/>
         </LinearLayout>
+
 
     </RelativeLayout>
 
