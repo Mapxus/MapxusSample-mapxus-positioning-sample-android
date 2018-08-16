@@ -74,7 +74,7 @@ MapxusPositioningClient.getInstance(this, "your appid", "your secret");
 <uses-permission android:name="android.permission.INTERNET" />
 ~~~
 
-**注意：** **Mapxus Positioning SDK 0.3.3**版本之后权限`READ_PHONE_STATE`与`WRITE_EXTERNAL_STORAGE`不再必须授予，可以删除。
+**注意：** **Mapxus Positioning SDK 0.3.3**版本之后权限`READ_PHONE_STATE`，**Mapxus Positioning SDK 0.3.4**版本后`WRITE_EXTERNAL_STORAGE`不再必须授予，可以删除。
 
 #### 1.2.5 Android 6.0及以上权限请求
 
@@ -85,7 +85,7 @@ MapxusPositioningClient.getInstance(this, "your appid", "your secret");
 *  `Manifest.permission.ACCESS_FINE_LOCATION`
 *  `Manifest.permission.ACCESS_COARSE_LOCATION`
 
-PS：关于如何动态请求权限详细可参考 Positioning Sample APP。 **Mapxus Positioning SDK 0.3.3**版本后不再需要检测`Manifest.permission.READ_PHONE_STATE`与`Manifest.permission.WRITE_EXTERNAL_STORAGE`
+PS：关于如何动态请求权限详细可参考 Positioning Sample APP。 **Mapxus Positioning SDK 0.3.3**版本后不再需要检测`Manifest.permission.READ_PHONE_STATE`，**Mapxus Positioning SDK 0.3.4**版本后不再需要检测`Manifest.permission.WRITE_EXTERNAL_STORAGE`
 
 ### 1.3 设备状态的开启
 
