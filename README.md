@@ -1,3 +1,5 @@
+[API reference](https://mapxussample.github.io/mapxus-positioning-sample-android/)
+
 # Mapxus Positioning Android SDK使用说明
 
 ## 1. 创建工程
