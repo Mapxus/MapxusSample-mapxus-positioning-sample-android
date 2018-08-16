@@ -1,5 +1,11 @@
 # Positioning SDK Change Log
 
+### Version 0.3.3
+
+* 去掉权限`Manifest.permission.READ_PHONE_STATE`
+* 去掉权限`Manifest.permission.WRITE_EXTERNAL_STORAGE`
+* 使用UUID
+
 ### Version 0.3.2
 
 * 增加检测手机是否支持Gnss的工具类 

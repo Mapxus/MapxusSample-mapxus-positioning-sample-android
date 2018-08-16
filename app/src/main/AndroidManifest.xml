@@ -15,10 +15,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <!-- 访问网络，定位需要上网 -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 用于读取手机当前的状态 -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!-- SDK使用外部存储-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name="com.mapxus.positioningsample.BaseApplication"
@@ -41,10 +37,10 @@
         <!--setup your appid and secret-->
         <meta-data
             android:name="com.mapxus.api.v1.appid"
-            android:value="{appid}" />
+            android:value="${appid}" />
         <meta-data
             android:name="com.mapxus.api.v1.secret"
-            android:value="{secret}" />
+            android:value="${secret}" />
 
         <activity android:name="com.mapxus.positioningsample.BaseActivity"
             android:screenOrientation="portrait" />

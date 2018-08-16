@@ -1,5 +1,3 @@
-[API reference](https://mapxussample.github.io/mapxus-positioning-sample-android/)
-
 # Mapxus Positioning Android SDK使用说明
 
 ## 1. 创建工程
@@ -27,7 +25,7 @@ allprojects {
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:0.3.2'
+	implementation 'com.mapxus.positioning:positioning:0.3.3'
 }
 ~~~
 
@@ -72,11 +70,10 @@ MapxusPositioningClient.getInstance(this, "your appid", "your secret");
 <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 <!--访问网络，定位需要上网-->
 <uses-permission android:name="android.permission.INTERNET" />
-<!--用于读取手机当前的状态-->
-<uses-permission android:name="android.permission.READ_PHONE_STATE" />
-<!--读写外部存储的权限，隐式赋予了读外部存储的权限-->
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ~~~
+
+**注意：** **Mapxus Positioning SDK 0.3.3**版本之后权限`READ_PHONE_STATE`与`WRITE_EXTERNAL_STORAGE`不再必须授予，可以删除。
+
 #### 1.2.5 Android 6.0及以上权限请求
 
 运行在Android6.0及以上设备如果项目配置targetSdkVersion小于23则会默认授予了所有申请的权限不需要检查和请求权限， 如果 targetSdkVersion >= 23 则需要。[Android在运行时请求权限指南](https://developer.android.com/training/permissions/requesting)
@@ -85,10 +82,8 @@ MapxusPositioningClient.getInstance(this, "your appid", "your secret");
 
 *  `Manifest.permission.ACCESS_FINE_LOCATION`
 *  `Manifest.permission.ACCESS_COARSE_LOCATION`
-*  `Manifest.permission.READ_PHONE_STATE`
-*  `Manifest.permission.WRITE_EXTERNAL_STORAGE`
 
-PS：关于如何动态请求权限详细可参考 Positioning Sample APP
+PS：关于如何动态请求权限详细可参考 Positioning Sample APP。 **Mapxus Positioning SDK 0.3.3**版本后不再需要检测`Manifest.permission.READ_PHONE_STATE`与`Manifest.permission.WRITE_EXTERNAL_STORAGE`
 
 ### 1.3 设备状态的开启
 
@@ -100,7 +95,7 @@ PS：关于如何动态请求权限详细可参考 Positioning Sample APP
 
 4. 确保使用Mapxus Positioning SDK的设备具有**气压传感器**，否则无法使用
 
-5. **Mapxus Positioning SDK 0.3.0** 版本之后加入室内外切换定位，目前该功能只能在支持原始GNSS测量的手机上使用。（大部分生产于2016年及以后系统为Android 7.0及以上）[点击查看支持的设备列表](https://developer.android.com/guide/topics/sensors/gnss#supported-devices)。 对于不支持室内外切换的设备，会默认是在室内中进行定位。或者可以使用提供的工具类 `Utils.isSupportGnss(Context context)`判断。
+5. **Mapxus Positioning SDK 0.3.0** 版本之后加入室内外切换定位，目前该功能只能在支持原始GNSS测量的手机上使用。（大部分生产于2016年及以后以及系统为Android 7.0及以上）[点击查看支持的设备列表](https://developer.android.com/guide/topics/sensors/gnss#supported-devices)。 对于不支持室内外切换的设备，会默认是在室内中进行定位。或者可以使用提供的工具类 `Utils.isSupportGnss(Context context)`判断。
 
 ## 2.获取室内定位
 
