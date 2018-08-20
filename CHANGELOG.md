@@ -1,6 +1,6 @@
 # Positioning SDK Change Log
 
-Version 0.3.4
+### Version 0.3.4
 
 * 去掉权限`Manifest.permission.WRITE_EXTERNAL_STORAGE`
 
