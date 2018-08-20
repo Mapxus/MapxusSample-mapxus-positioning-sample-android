@@ -159,17 +159,8 @@ private MapxusPositioningListener listener = new MapxusPositioningListener() {
 
 	@Override
 	public void onLocationChange(PositioningLocation location) {
-		//定位位置信息回调
-	}
-
-	@Override
-	public void onBuildingChange(PositioningBuilding building) {
-		//定位建筑变化回调
-	}
-
-	@Override
-	public void onFloorChange(PositioningFloor floor) {
-		//定位楼层变化回调
+		//定位位置信息回调，包含建筑、楼层已经经纬度信息
+		//如果定位到室外时则建筑、楼层返回为null
 	}
 };
 
