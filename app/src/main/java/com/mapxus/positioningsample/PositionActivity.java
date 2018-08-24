@@ -51,7 +51,7 @@ import com.mapxus.services.model.building.IndoorBuildingInfo;
 import timber.log.Timber;
 
 public class PositionActivity extends BaseActivity implements View.OnClickListener {
-    
+
     private ActivityPositionBinding mPositionBinding;
 
     private MapboxMap mMapboxMap; //Mapbox Map
@@ -111,19 +111,8 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                 mMapxusMap.addOnFloorChangeListener(new MapxusMap.OnFloorChangeListener() {
                     @Override
                     public void onFloorChange(IndoorBuilding indoorBuilding, String floorCode) {
-                        boolean isFirst = (null == mMapFloor); //室内地图首次显示，切换建筑和楼层，未显示地图前切换建筑和楼层是无效的
                         mMapFloor = floorCode;
                         if (null != mPositionLocation) {
-                            if (isFirst) { //首次显示室内地图切换建筑和楼层
-                                if (null != mPositionLocation.getBuildingId()) {
-                                    mMapxusMap.switchBuilding(mPositionLocation.getBuildingId());
-                                    Timber.d("Switch position building when indoor map first show.");
-                                }
-                                if (null != mPositionLocation.getFloor()) {
-                                    mMapxusMap.switchFloor(mPositionLocation.getFloor().getCode());
-                                    Timber.d("Switch position floor when map first show.");
-                                }
-                            }
                             //楼层不同则不显示定位图标
                             if (mPositionBinding.optionContent.getIsIndoor()) {
                                 if (null != mPositionLocation.getFloor() &&
@@ -333,37 +322,37 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
          *  定位位置信息返回
          *  室内：返回buildingId, floor, location
          *  室外：buildingId == null, floor == null, 返回location
-         * @param beeTrackLocation
+         * @param positioningLocation
          */
 
         @Override
-        public void onLocationChange(PositioningLocation beeTrackLocation) {
+        public void onLocationChange(PositioningLocation positioningLocation) {
             //定位的位置返回
-            LatLng latLng = new LatLng(beeTrackLocation.getLat(), beeTrackLocation.getLon());
-            Timber.d("Positioning result %s", new Gson().toJson(beeTrackLocation));
+            LatLng latLng = new LatLng(positioningLocation.getLat(), positioningLocation.getLon());
+            Timber.d("Positioning result %s", new Gson().toJson(positioningLocation));
             if (null != mMapxusMap) {
-                if (null != beeTrackLocation.getBuildingId() &&
+                if (null != positioningLocation.getBuildingId() &&
                         (mPositionLocation == null || mPositionLocation.getBuildingId() == null
-                        || !beeTrackLocation.getBuildingId().equals(mPositionLocation.getBuildingId()))) {//building change
-                    Timber.d("Building change to %s", beeTrackLocation.getBuildingId());
-                    mMapxusMap.switchBuilding(beeTrackLocation.getBuildingId());
+                                || !positioningLocation.getBuildingId().equals(mPositionLocation.getBuildingId()))) {//building change
+                    Timber.d("Building change to %s", positioningLocation.getBuildingId());
+                    mMapxusMap.switchBuilding(positioningLocation.getBuildingId());
                     mPositionBinding.optionContent.setIsIndoor(true);
                     isShowInCenter = true;
-                    queryBuildingInfo(beeTrackLocation.getBuildingId()); //query building detail info
-                } else if (null == beeTrackLocation.getBuildingId() && mPositionBinding.optionContent.getIsIndoor()) { //change to outdoor
+                    queryBuildingInfo(positioningLocation.getBuildingId()); //query building detail info
+                } else if (null == positioningLocation.getBuildingId() && mPositionBinding.optionContent.getIsIndoor()) { //change to outdoor
                     mPositionBinding.optionContent.setIsIndoor(false);
                     isShowInCenter = true;
                     Timber.d("Location change to outdoor");
                     Toast.makeText(PositionActivity.this, "Location change to outdoor", Toast.LENGTH_SHORT).show();
                 }
-                if (null != beeTrackLocation.getFloor() &&
+                if (null != positioningLocation.getFloor() &&
                         (mPositionLocation == null || mPositionLocation.getFloor() == null ||
-                        !beeTrackLocation.getFloor().getId().equals(mPositionLocation.getFloor().getId()))) {
-                    mMapxusMap.switchFloor(beeTrackLocation.getFloor().getCode());
-                    Timber.d("Floor change to %s", beeTrackLocation.getFloor().getCode());
+                                !positioningLocation.getFloor().getId().equals(mPositionLocation.getFloor().getId()))) {
+                    mMapxusMap.switchFloor(positioningLocation.getFloor().getCode());
+                    Timber.d("Floor change to %s", positioningLocation.getFloor().getCode());
                 }
 
-                mPositionLocation = beeTrackLocation;
+                mPositionLocation = positioningLocation;
 
                 //show outdoor or indoor marker
                 if (!mPositionBinding.optionContent.getIsIndoor() ||
@@ -470,11 +459,13 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                     builder.setItems(floors, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            PositioningFloor beeTrackFloor = new PositioningFloor
-                                    (floors[i], mPositionBuildingInfo.getFloors()[i].getId());
-                            mMapxusPositioningClient.changeFloor(beeTrackFloor);
-                            mMapxusMap.switchFloor(floors[i]);
-                            Timber.d("Change position floor to %s", floors[i]);
+                            if (mPositionBuildingInfo != null) {
+                                PositioningFloor positioningFloor = new PositioningFloor
+                                        (mPositionBuildingInfo.getFloors()[i].getId(), floors[i]);
+                                mMapxusPositioningClient.changeFloor(positioningFloor);
+                                mMapxusMap.switchFloor(floors[i]);
+                                Timber.d("Change position floor to %s", floors[i]);
+                            }
                         }
                     }).create().show();
                 } else {

@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 0.3.5
+
+* 支持没有气压传感器的设备使用室内定位服务
+
 ### Version 0.3.4
 
 * 去掉权限`Manifest.permission.WRITE_EXTERNAL_STORAGE`

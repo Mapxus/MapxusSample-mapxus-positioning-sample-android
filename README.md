@@ -27,7 +27,7 @@ allprojects {
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:0.3.4'
+	implementation 'com.mapxus.positioning:positioning:0.3.5'
 }
 ~~~
 
@@ -43,10 +43,10 @@ dependencies {
 <application ...
 	<meta-data
 	      android:name="com.mapxus.api.v1.appid"
-	      android:value="{appid}" />
+	      android:value="your appid" />
 	<meta-data
 	      android:name="com.mapxus.api.v1.secret"
-	      android:value="{secret}" />
+	      android:value="your secret" />
 </application>
 ```
 
@@ -95,9 +95,10 @@ PS：关于如何动态请求权限详细可参考 Positioning Sample APP。 **M
 
 3. Android6.0及以上设备出现在原生系统和部分第三方、厂商定制系统因没有开启GPS导致无法获取WIFI信息而不能进行定位的问题，所以Mapxus Positioning SDK在Android6.0及以上设备运行时**必须开启GPS**以防止无法使用
 
-4. 确保使用Mapxus Positioning SDK的设备具有**气压传感器**，否则无法使用
+4. 使用**Mapxus Positioning SDK 0.3.5以前前版本**设备必须要有**气压传感器**，否则无法使用。**Mapxus Positioning SDK 0.3.5** 版本之后没有气压传感器的设备也可以使用定位服务。
 
 5. **Mapxus Positioning SDK 0.3.0** 版本之后加入室内外切换定位，目前该功能只能在支持原始GNSS测量的手机上使用。（大部分生产于2016年及以后以及系统为Android 7.0及以上）[点击查看支持的设备列表](https://developer.android.com/guide/topics/sensors/gnss#supported-devices)。 对于不支持室内外切换的设备，会默认是在室内中进行定位。或者可以使用提供的工具类 `Utils.isSupportGnss(Context context)`判断。
+
 
 ## 2.获取室内定位
 
@@ -122,7 +123,7 @@ mMapxusPositioningClient.setPositioningListener(listener);
 //不设置此option则定位时会使用默认值
 MapxusPositioningOption option = new MapxusPositioningOption();
 
-//配置定位模式，NORMAL BACKGROUND GAME可选默认NORMAL（BACKFROUND、GAME模式暂时不可用）
+//配置定位模式，NORMAL BACKGROUND GAME可选, 默认NORMAL（BACKFROUND、GAME模式暂时不可用）
 positionerOption.setMode(LocationMode.NORMAL);
 
 //设置定位参数，不配置则会使用默认参数开始定位
@@ -159,9 +160,9 @@ private MapxusPositioningListener listener = new MapxusPositioningListener() {
 
 	@Override
 	public void onLocationChange(PositioningLocation location) {
-		//定位位置信息回调，包含建筑、楼层已经经纬度信息
-		//如果定位到室外时则建筑、楼层返回为null
+		//定位位置信息回调
 	}
+
 };
 
 ~~~
