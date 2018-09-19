@@ -1,10 +1,13 @@
 package com.mapxus.positioningsample;
 
+import android.animation.ObjectAnimator;
+import android.animation.TypeEvaluator;
+import android.animation.ValueAnimator;
+import android.app.AlertDialog.Builder;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
@@ -40,7 +43,6 @@ import com.mapxus.positioning.model.location.PositioningFloor;
 import com.mapxus.positioning.model.location.PositioningLocation;
 import com.mapxus.positioning.positioning.api.MapxusPositioningClient;
 import com.mapxus.positioning.positioning.api.MapxusPositioningListener;
-
 import com.mapxus.positioning.utils.Utils;
 import com.mapxus.positioningsample.databinding.ActivityPositionBinding;
 import com.mapxus.services.BuildingSearch;
@@ -303,6 +305,11 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
+                                    //todo 定位服务未开启时跳转到设置界面开启
+//                                    if (errorInfo.getErrorCode() == ErrorInfo.ERROR_LOCATION_SERVICE_DISABLED) {
+//                                        Intent locationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                                        startActivity(locationIntent);
+//                                    }
                                 }
                             }).create().show();
                 }
@@ -380,7 +387,10 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
             if (null == mPositionMarkerView) {
                 createPosisionMarker(latLng);
             } else {
-                mPositionMarkerView.setPosition(latLng);
+                ValueAnimator markerAnimator = ObjectAnimator.ofObject(mPositionMarkerView, "position",
+                        new LatLngEvaluator(), mPositionMarkerView.getPosition(), latLng);
+                markerAnimator.setDuration(500);
+                markerAnimator.start();
             }
         }
         if (null != mPositionMarkerView) {
@@ -404,6 +414,23 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
             mPositionMarkerView.remove();
             Timber.d("Remove position marker");
             mPositionMarkerView = null;
+        }
+    }
+
+    /**
+     * Method is used to interpolate the marker animation.
+     */
+    private static class LatLngEvaluator implements TypeEvaluator<LatLng> {
+
+        private LatLng latLng = new LatLng();
+
+        @Override
+        public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {
+            latLng.setLatitude(startValue.getLatitude()
+                    + ((endValue.getLatitude() - startValue.getLatitude()) * fraction));
+            latLng.setLongitude(startValue.getLongitude()
+                    + ((endValue.getLongitude() - startValue.getLongitude()) * fraction));
+            return latLng;
         }
     }
 
