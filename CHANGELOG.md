@@ -1,5 +1,11 @@
 # Positioning SDK Change Log
 
+### Version 0.3.6
+
+* 更新新版授权包，旧的id和secret后续会失效，请尽快联系获取新版的id与secret
+* 优化定位算法
+* 无气压室内定位只在单楼层定位，楼层切换需调用changeFloor接口
+
 ### Version 0.3.5
 
 * 支持没有气压传感器的设备使用室内定位服务

@@ -27,7 +27,7 @@ allprojects {
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:0.3.5'
+	implementation 'com.mapxus.positioning:positioning:0.3.6'
 }
 ~~~
 
@@ -95,9 +95,11 @@ PS：关于如何动态请求权限详细可参考 Positioning Sample APP。 **M
 
 3. Android6.0及以上设备出现在原生系统和部分第三方、厂商定制系统因没有开启GPS导致无法获取WIFI信息而不能进行定位的问题，所以Mapxus Positioning SDK在Android6.0及以上设备运行时**必须开启GPS**以防止无法使用
 
-4. 使用**Mapxus Positioning SDK 0.3.5以前前版本**设备必须要有**气压传感器**，否则无法使用。**Mapxus Positioning SDK 0.3.5** 版本之后没有气压传感器的设备也可以使用定位服务。
+4. 使用**Mapxus Positioning SDK 0.3.5以前前版本**设备必须要有**气压传感器**，否则无法使用。**Mapxus Positioning SDK 0.3.5** 版本之后没有气压传感器的设备也可以使用定位服务。**Mapxus Positioning SDK 0.3.6** 版本之后没有气压传感器的设备可以使用定位服务，但只能在单楼层定位不能自动切换楼层，如果需要调用changeFloor来进行楼层切换。
 
 5. **Mapxus Positioning SDK 0.3.0** 版本之后加入室内外切换定位，目前该功能只能在支持原始GNSS测量的手机上使用。（大部分生产于2016年及以后以及系统为Android 7.0及以上）[点击查看支持的设备列表](https://developer.android.com/guide/topics/sensors/gnss#supported-devices)。 对于不支持室内外切换的设备，会默认是在室内中进行定位。或者可以使用提供的工具类 `Utils.isSupportGnss(Context context)`判断。
+
+6. **Mapxus Positioning SDK 0.3.6** 版本之后更换了新版授权包，请尽快联系获取新的id与secret。
 
 
 ## 2.获取室内定位
