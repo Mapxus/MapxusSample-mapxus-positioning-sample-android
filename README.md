@@ -99,7 +99,11 @@ PS：关于如何动态请求权限详细可参考 Positioning Sample APP。 **M
 
 5. **Mapxus Positioning SDK 0.3.0** 版本之后加入室内外切换定位，目前该功能只能在支持原始GNSS测量的手机上使用。（大部分生产于2016年及以后以及系统为Android 7.0及以上）[点击查看支持的设备列表](https://developer.android.com/guide/topics/sensors/gnss#supported-devices)。 对于不支持室内外切换的设备，会默认是在室内中进行定位。或者可以使用提供的工具类 `Utils.isSupportGnss(Context context)`判断。
 
-6. **Mapxus Positioning SDK 0.3.6** 版本之后更换了新版授权包，请尽快联系获取新的id与secret。
+### 1.4 注意事项
+
+1. **Mapxus Positioning SDK 0.3.6**版本之后更换了新版授权包，请尽快联系获取新的id与secret。
+
+2. 使用**Mapxus Positioning SDK 0.3.6**及后续版本的Positioning SDK如果需要同时使用到MapxusMap，MapxusMap SDK版本须为**2.3.3-beta**或以上 
 
 
 ## 2.获取室内定位

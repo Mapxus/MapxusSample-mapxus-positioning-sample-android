@@ -6,6 +6,8 @@
 * 优化定位算法
 * 无气压室内定位只在单楼层定位，楼层切换需调用changeFloor接口
 
+PS：使用0.3.6及后续版本的Positioning SDK如果需要同时使用到MapxusMap，MapxusMap SDK版本须为2.3.3-beta或以上
+
 ### Version 0.3.5
 
 * 支持没有气压传感器的设备使用室内定位服务
