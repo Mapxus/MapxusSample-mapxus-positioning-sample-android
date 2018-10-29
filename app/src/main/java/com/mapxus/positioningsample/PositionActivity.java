@@ -10,10 +10,12 @@ import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -305,11 +307,11 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    //todo 定位服务未开启时跳转到设置界面开启
-//                                    if (errorInfo.getErrorCode() == ErrorInfo.ERROR_LOCATION_SERVICE_DISABLED) {
-//                                        Intent locationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                                        startActivity(locationIntent);
-//                                    }
+                                    //定位服务未开启或者未开启高精度模式时跳转到设置界面开启
+                                    if (errorInfo.getErrorCode() == ErrorInfo.ERROR_LOCATION_SERVICE_DISABLED) {
+                                        Intent locationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                        startActivity(locationIntent);
+                                    }
                                 }
                             }).create().show();
                 }

@@ -1,12 +1,21 @@
 # Positioning SDK Change Log
 
+### Version 0.3.7
+
+* 定位信息增加定位精度返回，单位：米
+* 缩短初始定位时间
+* 修复多线程安全漏洞，并优化定位流程
+* 修改错误的返回，未开启定位服务或开启但不是高精度模式时会报`ERROR_LOCATION_SERVICE_DISABLED`错误
+
+注意：使用0.3.7版本及以上如果需要同时使用MapxusMap，MapxusMap SDK须升级为**2.4.1**及以上版本
+
 ### Version 0.3.6
 
 * 更新新版授权包，旧的id和secret后续会失效，请尽快联系获取新版的id与secret
 * 优化定位算法
 * 无气压室内定位只在单楼层定位，楼层切换需调用changeFloor接口
 
-PS：使用0.3.6及后续版本的Positioning SDK如果需要同时使用到MapxusMap，MapxusMap SDK版本须为2.3.3-beta或以上
+注意：使用0.3.6版本如果需要同时使用到MapxusMap，MapxusMap SDK版本须设置为**2.3.3-beta**
 
 ### Version 0.3.5
 

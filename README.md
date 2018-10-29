@@ -27,11 +27,11 @@ allprojects {
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:0.3.6'
+	implementation 'com.mapxus.positioning:positioning:0.3.7'
 }
 ~~~
 
-***注意***：Mapxus Positioning SDK 使用限制minSdkVersion 为19，所以请运行在Android4.4或以上的手机系统
+***注意***：Mapxus Positioning SDK 使用限制minSdkVersion 为19，所以请运行在Android4.4或以上的系统
 
 #### 1.2.3 添加授权的 app id 和 secret
 
@@ -50,7 +50,7 @@ dependencies {
 </application>
 ```
 
-(2). 在获取定位服务客户端MapxusPositioningClient的实例时传入 app id 和 secret
+(2). 在获取定位服务客户端MapxusPositioningClient实例时传入 app id 和 secret
 
 ~~~java
 MapxusPositioningClient mMapxusPositioningClient = 
@@ -85,7 +85,7 @@ MapxusPositioningClient.getInstance(this, "your appid", "your secret");
 *  `Manifest.permission.ACCESS_FINE_LOCATION`
 *  `Manifest.permission.ACCESS_COARSE_LOCATION`
 
-PS：关于如何动态请求权限详细可参考 Positioning Sample APP。 **Mapxus Positioning SDK 0.3.3**版本后不再需要检测`Manifest.permission.READ_PHONE_STATE`，**Mapxus Positioning SDK 0.3.4**版本后不再需要检测`Manifest.permission.WRITE_EXTERNAL_STORAGE`
+**注意**：关于如何动态请求权限详细可参考 Positioning Sample APP。 **Mapxus Positioning SDK 0.3.3**版本后不再需要检测`Manifest.permission.READ_PHONE_STATE`，**Mapxus Positioning SDK 0.3.4**版本后不再需要检测`Manifest.permission.WRITE_EXTERNAL_STORAGE`
 
 ### 1.3 设备状态的开启
 
@@ -93,18 +93,32 @@ PS：关于如何动态请求权限详细可参考 Positioning Sample APP。 **M
 
 2. 请**开启WIFI**，定位过程需要不断获取WIFI信息进行定位
 
-3. Android6.0及以上设备出现在原生系统和部分第三方、厂商定制系统因没有开启GPS导致无法获取WIFI信息而不能进行定位的问题，所以Mapxus Positioning SDK在Android6.0及以上设备运行时**必须开启GPS**以防止无法使用
+3. Android6.0及以上设备出现在原生系统和部分第三方、厂商定制系统因没有开启GPS导致无法获取WIFI信息而不能进行定位的问题，所以Mapxus Positioning SDK在Android6.0及以上设备运行时**必须开启定位服务**以防止无法使用。
 
-4. 使用**Mapxus Positioning SDK 0.3.5以前前版本**设备必须要有**气压传感器**，否则无法使用。**Mapxus Positioning SDK 0.3.5** 版本之后没有气压传感器的设备也可以使用定位服务。**Mapxus Positioning SDK 0.3.6** 版本之后没有气压传感器的设备可以使用定位服务，但只能在单楼层定位不能自动切换楼层，如果需要调用changeFloor来进行楼层切换。
+4. 使用**Mapxus Positioning SDK 0.3.5以前前版本**设备必须要有**气压传感器**，否则无法使用。**Mapxus Positioning SDK 0.3.5** 版本之后没有气压传感器的设备也可以使用定位服务可能会出现定位楼层跳动。**Mapxus Positioning SDK 0.3.6** 版本之后没有气压传感器的设备可以使用定位服务，但只能在单楼层定位不能自动切换楼层，如果需要调用changeFloor来进行楼层切换。
 
 5. **Mapxus Positioning SDK 0.3.0** 版本之后加入室内外切换定位，目前该功能只能在支持原始GNSS测量的手机上使用。（大部分生产于2016年及以后以及系统为Android 7.0及以上）[点击查看支持的设备列表](https://developer.android.com/guide/topics/sensors/gnss#supported-devices)。 对于不支持室内外切换的设备，会默认是在室内中进行定位。或者可以使用提供的工具类 `Utils.isSupportGnss(Context context)`判断。
+
+6. **Mapxus Positioning SDK 0.3.7**及以后版本**定位服务**须开启高精度模式，否则会返回`ERROR_LOCATION_SERVICE_DISABLED`错误。可通过以下代码跳转到设置定位服务精度的界面中设置其精度：
+
+~~~java
+Intent locationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+startActivity(locationIntent);
+~~~
 
 ### 1.4 注意事项
 
 1. **Mapxus Positioning SDK 0.3.6**版本之后更换了新版授权包，请尽快联系获取新的id与secret。
 
-2. 使用**Mapxus Positioning SDK 0.3.6**及后续版本的Positioning SDK如果需要同时使用到MapxusMap，MapxusMap SDK版本须为**2.3.3-beta**或以上 
+2. 使用**Mapxus Positioning SDK 0.3.6**如果需要同时使用到MapxusMap，MapxusMap SDK版本须同步升级为**2.3.3-beta**
 
+3. 使用**Mapxus Positioning SDk 0.3.7**及以上版本如果需要同时使用到MapxusMap, MapxusMap SDK版本须升级为**2.4.1**及以上版本
+
+| Mapxus Positioning SDK  |  对应的可使用MapxusMap SDK版本  |
+| ----------------------- |  --------------------------- |
+|    0.3.0 ~ 0.3.5        |  2.0.0-beta ~ 2.2.1-beta     |
+|    0.3.6				   |  2.3.3-beta                  |
+|    0.3.7及后续版本			|  2.4.1及后续版本              |
 
 ## 2.获取室内定位
 
@@ -166,7 +180,7 @@ private MapxusPositioningListener listener = new MapxusPositioningListener() {
 
 	@Override
 	public void onLocationChange(PositioningLocation location) {
-		//定位位置信息回调
+		//定位位置信息回调，包括建筑ID、楼层信息、经纬度、定位精确度
 	}
 
 };
