@@ -1,5 +1,10 @@
 # Positioning SDK Change Log
 
+### Version 0.3.8
+
+* 修改精度返回接口名称
+
+
 ### Version 0.3.7
 
 * 定位信息增加定位精度返回，单位：米
