@@ -27,7 +27,7 @@ allprojects {
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:0.3.9'
+	implementation 'com.mapxus.positioning:positioning:0.3.10'
 }
 ~~~
 

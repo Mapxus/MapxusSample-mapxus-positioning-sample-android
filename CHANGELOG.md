@@ -1,5 +1,10 @@
 # Positioning SDK Change Log
 
+### Version 0.3.10
+
+* 修复定位算法中的bug
+* 定位出现网络错误时再多次重试
+
 ### Version 0.3.9
 
 * 修复室内外切换出错、楼层切换速度慢且不准确问题
