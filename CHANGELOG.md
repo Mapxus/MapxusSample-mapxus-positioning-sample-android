@@ -1,5 +1,13 @@
 # Positioning SDK Change Log
 
+### Version 0.3.12
+
+* 修复部分机型没有更换新算法的bug
+
+### Version 0.3.11
+
+* 更换使用的定位算法
+
 ### Version 0.3.10
 
 * 修复定位算法中的bug

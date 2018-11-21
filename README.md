@@ -1,18 +1,19 @@
 [API reference](https://mapxussample.github.io/mapxus-positioning-sample-android/)
 
-# Mapxus Positioning Android SDK使用说明
+# Mapxus Positioning Android SDK Instruction
 
-## 1. 创建工程
 
-### 1.1 创建Android项目
+## 1. Create a Project
 
-首先创建一个新的 Android 项目（[Android创建项目指南](https://developer.android.com/studio/projects/create-project)），然后按照以下步骤手动集成。
+### 1.1 Create an Android Project
 
-### 1.2 配置项目
+First of all, create a new Android project ([Instruction for creating an Android project](https://developer.android.com/studio/projects/create-project)).Then, configure your project according to the following steps.
 
-#### 1.2.1 配置项目仓库地址
+### 1.2 Configure the Project
 
-在项目根目录下的build.gradle中添加jcenter()
+#### 1.2.1 Configure Repository Address of Your Project
+
+Add jcenter() in build.gradle under the root directory in your project.
 
 ~~~groovy
 allprojects {
@@ -22,22 +23,22 @@ allprojects {
 }
 ~~~
 
-#### 1.2.2 添加Positioning SDK依赖
-在需要使用到Positioning SDK的module的`build.gradle`文件中添加依赖：
+#### 1.2.2 Add Positioning SDK Dependencies
+Add dependencies in `build.gradle` file of necessary modules: 
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:0.3.10'
+	implementation 'com.mapxus.positioning:positioning:0.3.12'
 }
 ~~~
 
-***注意***：Mapxus Positioning SDK 使用限制minSdkVersion 为19，所以请运行在Android4.4或以上的系统
+***Note***：Please make sure that your project's minimum SDK Version is at 19 or above. Therefore, please operate it in Android 4.4 or above.
 
-#### 1.2.3 添加授权的 app id 和 secret
+#### 1.2.3 Add Licensed APP ID and Secret
 
-传入 app id 和 secret 有以下两种方式，可以按照自己的需要选择其中一种：
+There are two ways of adding app id and secret. You can choose one as needed.
 
-(1). 在 **AndroidManifest.xml** 文件的 *application* 节点中添加 *meta-data*
+##### Option 1: Add *meta-data* in *application* node of **AndroidManifest.xml** file.
 
 ```xml
 <application ...
@@ -50,7 +51,8 @@ dependencies {
 </application>
 ```
 
-(2). 在获取定位服务客户端MapxusPositioningClient实例时传入 app id 和 secret
+##### Option 2: Add app id and secret when getting MapxusPositioningClient instance
+
 
 ~~~java
 MapxusPositioningClient mMapxusPositioningClient = 
@@ -58,188 +60,196 @@ MapxusPositioningClient.getInstance(this, "your appid", "your secret");
 ~~~
 
 
-#### 1.2.4 在项目清单文件AndroidMainfest.xml里添加权限
+#### 1.2.4 Set up Permissions in AndroidMainfest.xml in Your Application Manifest Files
 ~~~xml
-<!--获取运营商信息，用于支持提供运营商信息相关的接口-->
+<!--access information about networks to support relevant interface-->
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<!--用于进行网络定位-->
+<!--to access approximate location through Internet-->
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-<!--用于访问GPS定位-->
+<!--to access precise location-->
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+<!--to access information about Wifi networks for positioning-->
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-<!--这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+<!--to change Wifi connectivity state -->
 <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-<!--访问网络，定位需要上网-->
+<!--to open network socket-->
 <uses-permission android:name="android.permission.INTERNET" />
 ~~~
 
-**注意：** **Mapxus Positioning SDK 0.3.3**版本之后权限`READ_PHONE_STATE`，**Mapxus Positioning SDK 0.3.4**版本后`WRITE_EXTERNAL_STORAGE`不再必须授予，可以删除。
+**Remarks**:
 
-#### 1.2.5 Android 6.0及以上权限请求
+Please refer to Positioning Sample APP about how to dynamically ask for permissions. `Manifest.permission.READ_PHONE_STATE` permission is not required to ask for in terms of **Mapxus Positioning SDK 0.3.3 and above**. Permission of `Manifest.permission.WRITE_EXTERNAL_STORAGE` is required to ask for in terms of **Mapxus Positioning SDK 0.3.4 and above**.
 
-运行在Android6.0及以上设备如果项目配置targetSdkVersion小于23则会默认授予了所有申请的权限不需要检查和请求权限， 如果 targetSdkVersion >= 23 则需要。[Android在运行时请求权限指南](https://developer.android.com/training/permissions/requesting)
 
-**Mapxus Positioning SDK** 需要检测获取的权限有：
+#### 1.2.5 Request Permissions When Using Android 6.0 or above
+
+If your device is in Android 6.0 or above, when configuring your project, you need to grant all permissions as below.
+
+For devices using Android 6.0 and above, if targetSdkVersion is less than 23, all permissions will be granted without asking. However, if targetSdkVersion is no more than 23, permissions will be asked. [Referrence: Guidebook of permissions requesting in Android](https://developer.android.com/training/permissions/requesting)
+
+
+**Mapxus Positioning SDK** will ask these permissions：
 
 *  `Manifest.permission.ACCESS_FINE_LOCATION`
 *  `Manifest.permission.ACCESS_COARSE_LOCATION`
 
-**注意**：关于如何动态请求权限详细可参考 Positioning Sample APP。 **Mapxus Positioning SDK 0.3.3**版本后不再需要检测`Manifest.permission.READ_PHONE_STATE`，**Mapxus Positioning SDK 0.3.4**版本后不再需要检测`Manifest.permission.WRITE_EXTERNAL_STORAGE`
 
-### 1.3 设备状态的开启
+Remarks: You can refer to Positioning Sample APP about how to ask permissions dynamically. However, **Mapxus Positioning SDK 0.3.3** and above will not ask permission of `Manifest.permission.READ_PHONE_STATE`; **Mapxus Positioning SDK 0.3.4** and above will not ask `Manifest.permission.WRITE_EXTERNAL_STORAGE`.
 
-1. 请在整个定位过程中确保**网络可用**，定位过程需要不断进行网络请求获取最新位置信息
+### 2.3 Device Hardware Requirement
 
-2. 请**开启WIFI**，定位过程需要不断获取WIFI信息进行定位
+1. Location is always updated through asking network during the process of positioning. Please make sure your **network** is available;
 
-3. Android6.0及以上设备出现在原生系统和部分第三方、厂商定制系统因没有开启GPS导致无法获取WIFI信息而不能进行定位的问题，所以Mapxus Positioning SDK在Android6.0及以上设备运行时**必须开启定位服务**以防止无法使用。
+2. Location is always updated through asking Wifi network. Please **activate Wifi** during positioning;
 
-4. 使用**Mapxus Positioning SDK 0.3.5以前前版本**设备必须要有**气压传感器**，否则无法使用。**Mapxus Positioning SDK 0.3.5** 版本之后没有气压传感器的设备也可以使用定位服务可能会出现定位楼层跳动。**Mapxus Positioning SDK 0.3.6** 版本之后没有气压传感器的设备可以使用定位服务，但只能在单楼层定位不能自动切换楼层，如果需要调用changeFloor来进行楼层切换。
+3. In terms of devices (Android 6.0 or above) with native system or some third-parties, manufacturers customized system, Wifi information is not accessible because GPS is not on. In this case, it is impossible to access location. Therefore, when using Bee Track in devices (Android 6.0 or above), **Location Service** should be available during positioning. 
 
-5. **Mapxus Positioning SDK 0.3.0** 版本之后加入室内外切换定位，目前该功能只能在支持原始GNSS测量的手机上使用。（大部分生产于2016年及以后以及系统为Android 7.0及以上）[点击查看支持的设备列表](https://developer.android.com/guide/topics/sensors/gnss#supported-devices)。 对于不支持室内外切换的设备，会默认是在室内中进行定位。或者可以使用提供的工具类 `Utils.isSupportGnss(Context context)`判断。
+4. Make sure the device is equipped with **pressure sensor** if you are using **Mapxus Positioning SDK 0.3.5 and below**. Pressure sensor is not required for **Mapxus Positioning SDK 0.3.5 and above**. However, in this case, current floor may not be stable. For **Mapxus Positioning SDK 0.3.6** and above, devices without pressure sensor can use positioning service in one floor. For changing floor during positioning, you should call changeFloor.
 
-6. **Mapxus Positioning SDK 0.3.7**及以后版本**定位服务**须开启高精度模式，否则会返回`ERROR_LOCATION_SERVICE_DISABLED`错误。可通过以下代码跳转到设置定位服务精度的界面中设置其精度：
+5. **Mapxus Positioning SDK 0.3.0** and above allow switch between  indoor positioning and outdoor positioning. This feature only works for smart phones with raw GNSS measurements (mostly producing after 2016 and equipped with Android 7.0 and above). Click [here] (https://developer.android.com/guide/topics/sensors/gnss#supported-devices) to see details of supporting devices. If your devices are not able to support switch between indoor positioning and outdoor positioning, it will position indoor by default. You may use `Utils.isSupportGnss(Context context)` to determine.
+
+6. When using **Mapxus Positioning SDK 0.3.7** and above version, you should activate precise **location service**. Otherwise, it will return `ERROR_LOCATION_SERVICE_DISABLED` error. By the following codes, you can set location precision:
 
 ~~~java
 Intent locationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 startActivity(locationIntent);
 ~~~
+ 
 
-### 1.4 注意事项
 
-1. **Mapxus Positioning SDK 0.3.6**版本之后更换了新版授权包，请尽快联系获取新的id与secret。
+### 1.4 Notice
 
-2. 使用**Mapxus Positioning SDK 0.3.6**如果需要同时使用到MapxusMap，MapxusMap SDK版本须同步升级为**2.3.3-beta**
+1. **Mapxus Positioning SDK 0.3.6** and above are using new authorization package. Please contact us and renew your id and secret.
 
-3. 使用**Mapxus Positioning SDk 0.3.7**及以上版本如果需要同时使用到MapxusMap, MapxusMap SDK版本须升级为**2.4.1**及以上版本
+2. When using **Mapxus Positioning SDK 0.3.6**, please use MapxusMap SDK versioning **2.3.3-beta** and above if you need to use Mapxus Map.
 
-| Mapxus Positioning SDK  |  对应的可使用MapxusMap SDK版本  |
+3. When using **Mapxus Positioning SDK 0.3.7** and above, please use Mapxus Map versioning **2.4.1** and above.
+
+| Mapxus Positioning Map SDK Version  |  Mapxus Map SDK Version  |
 | ----------------------- |  --------------------------- |
 |    0.3.0 ~ 0.3.5        |  2.0.0-beta ~ 2.2.1-beta     |
 |    0.3.6				   |  2.3.3-beta                  |
-|    0.3.7及后续版本			|  2.4.1及后续版本              |
+|    0.3.7 and above|  2.4.1 and above              |
 
-## 2.获取室内定位
 
-### 2.1 获取实例
+## 2.Access Indoor Location
 
-以下为获取MapxusPositioningClient的示例代码（在主线程中调用）：
+### 2.1 Examples
+
+Example of MapxusPositioningClient (shoule be called at main thread): 
 
 ~~~java
-//声明MapxusPositioningClient对象
+//declaire MapxusPositioningClient object in main thread
 public MapxusPositioningClient mMapxusPositioningClient;
 
-//获取MapxusPositioningClient定位服务客户端的实例
+//access MapxusPositioningClient example
 mMapxusPositioningClient = MapxusPositioningClient.getInstance(getApplicationContext());
 
-//设置定位信息回调监听
+//set positioning listener
 mMapxusPositioningClient.setPositioningListener(listener);
 ~~~
 
-### 2.2 配置定位参数
+### 2.2 Configure Parameters
 
 ~~~java
-//不设置此option则定位时会使用默认值
+//skip this option and positioning will take default value
 MapxusPositioningOption option = new MapxusPositioningOption();
 
-//配置定位模式，NORMAL BACKGROUND GAME可选, 默认NORMAL（BACKFROUND、GAME模式暂时不可用）
+//configure positioning mode; NORMAL,BACKGROUND, and GAME is optional; default NORMAL, (BACKFROUND and GAME are disabled now)
 positionerOption.setMode(LocationMode.NORMAL);
 
-//设置定位参数，不配置则会使用默认参数开始定位
+//configure positioning parameters; otherwise, default parameter will be taken when start positioning
 mIndoorPositionerClient.setPositionerOption(option);
 ~~~
 
-### 2.3 获取定位
+### 2.3 Access Location
 
-实现MapxusPositioningListener接口，获取定位结果
+Implement MapxusPositioningListener interface and access location 
 
 ~~~java
-//实现MapxusPositioningListener监听接口
+//implement MapxusPositioningListener
 private MapxusPositioningListener listener = new MapxusPositioningListener() {
 	@Override
 	public void onStateChange(PositioningState state) {
-		//定位过程中状态变化回调
-		//WAITING >>>> 调用start()到成功获取定位位置前的等待状态
-		//RUNNING >>>> 定位成功后的运行状态
-		//PAUSED  >>>> 调用pause()后成功暂停返回暂停状态
-		//STOPPED >>>> 调用stop()后成功停止返回停止状态
-	}
+		//callback of state change during positioning
+		//WAITING >>>> callback between calling start() and position successfully
+		//RUNNING >>>> callback  when position successfully
+		//PAUSED  >>>> callback after successfully callling pause()
+		//STOPPED >>>> callback after successfully calling stop()	}
 
 	@Override
 	public void onError(ErrorInfo errorInfo) {
-		//错误信息回调，各类错误信息解释请查看API文档
-		//开始定位后出现的错误信息的返回 errorCode == WARNING 时定位引擎会抛出此错误信息后仍继续运行
-		//其余错误返回后会自动销毁定位引擎，再使用须重新实例化IndoorLocatorClient 定位成功前初始化可能出现多个错误返回
-	}
+		//callback of error information; check API documentation for detailed error information;
+		//return of error information after positioning; if errorCode == ERROR_WARNING, position engine will keep running;
+		//if other errors happen, engine will be destroyed after error return; then you should re-instantiate IndoorLocatorClient; initialize before location successfully may lead to error returns;	}
 
 	@Override
 	public void onOrientationChange(float orientation) {
-		//当前角度信息回调，取值范围在[0, 360]间，0代表正北方，90代表正东，180代表正南，270代表正西
+		//orientation change callback, value ranging [0, 360]; 0 due north, 90 east, 180 south, and 270 west;
 	}
 
 	@Override
 	public void onLocationChange(PositioningLocation location) {
-		//定位位置信息回调，包括建筑ID、楼层信息、经纬度、定位精确度
+		//location information callback, including building ID, floor, longitude&latitude, positioning accuracy
 	}
-
+	
 };
 
 ~~~
-### 2.4 开始定位
+### 2.4 Start Positioning
 
 ~~~java
-//调用start()之后只需要等待定位结果自动返回即可, 定位成功后会不断地请求定位更新位置
-//只在第一次调用有效，其他状态下调用无效。重新start()请stop()后重新获取MapxusPositioningClient实例执行
-//开始成功返回PositioningState.RUNNING
-mMapxusPositioningClient.start(); //开始定位
+//call start() and wait for automatic response of position result; constant ask of  updated location after successful positioning;
+//Valid for the first call; invalid for the other states. Please stop() and renew IndoorPositionerClient example executio after restart();
+//successfuly call back PositioningState.RUNNING
+mMapxusPositioningClient.start(); //start positioning
 ~~~
 
-### 2.5 暂停定位
+### 2.5 Pause Positioning
 ~~~java
-//暂停运行状态（其他状态下调用无效）的定位引擎，不再请求定位但不销毁定位服务
-//暂停成功返回PositioningState.PAUSED
+//positionging engine for pause running state (invalid for the other states); no calling position and not destroy positioning service
+//successfully callback pause PositioningState.PAUSED
 mMapxusPositioningClient.pause();
 ~~~
-### 2.6 恢复定位
+### 2.6 Resume Positioning
 ~~~java
-//恢复暂停状态（其他状态下调用无效）的定位引擎，继续不断地请求定位更新位置
-//恢复成功返回PositioningState.RUNNING
+//positioning engine for resume pause state (invalid for the other states); constant call for updated location
+//successfully callback resume PositioningState.RUNNING
 mMapxusPositioningClient.resume();
 ~~~
-### 2.7 切换定位模式
+### 2.7 Change Positioning Mode
 ~~~java
-//在定位成功后的运行状态（其他状态下调用无效）切换定位模式（此方法暂时不可用）
+//change positioning mode in running state after successfully positioning (invalid for the other states) (not working now)
 mMapxusPositioningClient.changeMode(newMode);
 ~~~
-### 2.8 切换定位楼层
+### 2.8 Change Floor
 ~~~java
-//在定位成功后的运行状态（其他状态下调用无效）切换定位定位楼层
+//change floor in running state after successfully positioning (invalid for the other states);
 mMapxusPositioningClient.changeFloor(floor);
 ~~~
-### 2.9 停止定位
+### 2.9 Stop Positioning
 ~~~java
-//在开始后的任意状态调用均有效，可直接停止等待、暂停、运行状态下的定位服务，停止成功返回PositionerState.STOPED
-//停止定位，销毁定位引擎，再使用需要重新获取MapxusPositioningClient实例
+//valid for any states after start positioning; able to stop positioning service in waiting, pause, running states; successfully callback PositionerState.STOPED
+//stop positioning, destroy positioning engine and resume IndoorPositionerClient instance;
  mMapxusPositioningClient.stop();
 ~~~
-### 2.10 开启后台定位服务
+### 2.10 Enable Backgroung Positioning Service
 ~~~java
-//开启后台定位服务。
-//Android6.0 以上为了节能优化，app退到后台一段时间没有使用系统会判断它处于空闲状态
-//停用网络访问以及暂停同步和作业导致无法正常使用定位服务。开启后能防止出现这种情况
+//enable background positioning service;
+//For devices (Android6.0 and above), once app goes to background, system will define it as vacant for energy saving;
+//Stop network access and stop synchronization will lead to unusual positioning service. Enable background positioning service can avoid this case;
 mMapxusPositioningClient.enableBackgroundPositioning(1, notification);
 ~~~
-### 2.11 关闭后台定位服务
+### 2.11 Disable Background Positioning Service
 ~~~java
-//app返回前台后可关闭后台定位服务
+//disable background positioning service when APP goes to the front;
 mMapxusPositioningClient.disableBackgroundPositioning(true);
 ~~~
 
-### 2.12 定位过程中切换定位楼层
+### 2.12 Change Floor During Positioning
 
 ~~~java
-//定位过程中切换定位楼层
+//change floor during positioning;
 mMapxusPositioningClient.changeFloor(positioningFloor);
 ~~~
 

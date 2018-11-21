@@ -8,7 +8,7 @@ versions.junit = "4.12"
 versions.espresso = "3.0.1"
 versions.atsl_runner = "1.0.1"
 versions.beemap = "2.4.1"
-versions.positioning = "0.3.10"
+versions.positioning = "0.3.12"
 def deps = [:]
 
 def mapxus = [:]
