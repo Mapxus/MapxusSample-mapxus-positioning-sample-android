@@ -2,71 +2,70 @@
 
 ### Version 0.3.12
 
-* 修复部分机型没有更换新算法的bug
+* Fix the bug of which some phone models do not take new algorithm
 
 ### Version 0.3.11
 
-* 更换使用的定位算法
+* Change positioning algorithms
 
 ### Version 0.3.10
 
-* 修复定位算法中的bug
-* 定位出现网络错误时再多次重试
+* Fix bugs in positioning algorithms
+* Multiple attempts if network error happens during positioning
 
 ### Version 0.3.9
 
-* 修复室内外切换出错、楼层切换速度慢且不准确问题
-* 修复多线程安全漏洞，优化定位流程
+* Correct switching problem between indoor positioning and outdoor positioning and fix issue of low-speed, inaccurate floor change
+* Fix multi-threaded security vulnerability and optimize positioning process
 
 
 ### Version 0.3.8
 
-* 修改精度返回接口名称
+* Change naming of accuracy return interface
 
 
 ### Version 0.3.7
 
-* 定位信息增加定位精度返回，单位：米
-* 缩短初始定位时间
-* 修复多线程安全漏洞，并优化定位流程
-* 修改错误的返回，未开启定位服务或开启但不是高精度模式时会报`ERROR_LOCATION_SERVICE_DISABLED`错误
-
-注意：使用0.3.7版本及以上如果需要同时使用MapxusMap，MapxusMap SDK须升级为**2.4.1**及以上版本
+* Add positioning accuracy return in positioning information, unit: metre
+* Shorten initial positioning time
+* Fix multi-threaded security vulnerability and optimize positioning process
+* Correct wrong return. Error of `ERROR_LOCATION_SERVICE_DISABLED` will be reported if the user does not activate location service or the location service is in high accuracy
+Notice: For using Mapxus Positioning map (version 0.3.7 or above), if you need to use Mapxus Map as well ,please update Mapxus Map to versioning **2.4.1** or above.
 
 ### Version 0.3.6
 
-* 更新新版授权包，旧的id和secret后续会失效，请尽快联系获取新版的id与secret
-* 优化定位算法
-* 无气压室内定位只在单楼层定位，楼层切换需调用changeFloor接口
+* Update new license package. The previous api id and secret will be invalid soon. Please contact us to acquire new id and secret;
+* Optimize positioning algorithm;
+* Positioning can only be realized in a single floor without a pressure sensor. `changeFloor` is needed for switching floors.
 
-注意：使用0.3.6版本如果需要同时使用到MapxusMap，MapxusMap SDK版本须设置为**2.3.3-beta**
+Notice: For using Mapxus Positioning map (version 0.3.6 or above), if you need to use Mapxus Map as well ,please update Mapxus Map to versioning **2.3.3-beta** or above. 
 
 ### Version 0.3.5
 
-* 支持没有气压传感器的设备使用室内定位服务
+* Support indoor positioning service for the device without pressure sensor
 
 ### Version 0.3.4
 
-* 去掉权限`Manifest.permission.WRITE_EXTERNAL_STORAGE`
+* Remove `Manifest.permission.WRITE_EXTERNAL_STORAGE` permission
 
 ### Version 0.3.3
 
-* 去掉权限`Manifest.permission.READ_PHONE_STATE`
-* 使用UUID
+* Remove `Manifest.permission.READ_PHONE_STATE` permission
+* Use UUID
 
 ### Version 0.3.2
 
-* 增加检测手机是否支持Gnss的工具类 
+* Add utility class to check if the device supports GNSS or not 
 
 ### version 0.3.1
 
-* 定位过程中出现网络中断会继续定位，不退出定位服务
+* Continue to position if network disconnect during positioning (instead of stop positioning)
 
 ### Version 0.3.0
 
-* 新增支持室外定位功能（仅限支持Gnss的手机能使用），室外定位返回空的建筑和楼层信息
-* 新增 `WARNING` 错误类型，用以提示用户而不会退出定位服务
-* 实现定位过程中切换定位楼层的接口
-* 更新各接口的名字及包名地址
-* 更换正式包的仓库地址，可以使用jcenter自动集成
-* 解决上传包pom文件缺失问题
+* Add outdoor positioning service (only for devices with GNSS). For outdoor positioning, the returned information is null building and floor.
+* Add `WARNING`, which will notice the user but will not exit positioning service
+* Implement change floor interface during positioning
+* Change name and package name address of each interface
+* Change to release package repository which can be automated integrated by jcenter
+* Resolve pom file deficiency of upload package
