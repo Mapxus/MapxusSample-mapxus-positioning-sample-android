@@ -1,5 +1,10 @@
 # Positioning SDK Change Log
 
+### Version 0.3.13
+
+* Return the orientation accuracy level when the orientation returns. You can tilt and move your phone like a 8-shape when the accuracy is not high
+* Add and modify some error message to return
+
 ### Version 0.3.12
 
 * Fix the bug of which some phone models do not take new algorithm

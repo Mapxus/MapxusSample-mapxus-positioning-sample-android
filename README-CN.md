@@ -27,7 +27,7 @@ allprojects {
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:0.3.12'
+	implementation 'com.mapxus.positioning:positioning:0.3.13'
 }
 ~~~
 
@@ -174,8 +174,9 @@ private MapxusPositioningListener listener = new MapxusPositioningListener() {
 	}
 
 	@Override
-	public void onOrientationChange(float orientation) {
+	public void onOrientationChange(float orientation, SensorAccuracy accuracy) {
 		//当前角度信息回调，取值范围在[0, 360]间，0代表正北方，90代表正东，180代表正南，270代表正西
+		//accuracy为当前角度的精度等级，建议在非高精度模式下使用8字校准法校准角度
 	}
 
 	@Override

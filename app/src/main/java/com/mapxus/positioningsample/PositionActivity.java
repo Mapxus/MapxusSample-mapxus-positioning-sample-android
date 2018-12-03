@@ -41,6 +41,7 @@ import com.mapxus.positioning.config.MapxusPositioningOption;
 import com.mapxus.positioning.model.info.ErrorInfo;
 import com.mapxus.positioning.model.info.LocationMode;
 import com.mapxus.positioning.model.info.PositioningState;
+import com.mapxus.positioning.model.info.SensorAccuracy;
 import com.mapxus.positioning.model.location.PositioningFloor;
 import com.mapxus.positioning.model.location.PositioningLocation;
 import com.mapxus.positioning.positioning.api.MapxusPositioningClient;
@@ -319,7 +320,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         }
 
         @Override
-        public void onOrientationChange(float v) {
+        public void onOrientationChange(float v, SensorAccuracy accuracy) {
             //手机朝向信息, 顺时针0-360
             mCurrentRotation = v; //保存最新的方向信息
             if (null != mMapboxMap) {
