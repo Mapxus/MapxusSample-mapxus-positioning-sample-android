@@ -320,11 +320,22 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         }
 
         @Override
-        public void onOrientationChange(float v, SensorAccuracy accuracy) {
+        public void onOrientationChange(float orientation, @SensorAccuracy int accuracy) {
             //手机朝向信息, 顺时针0-360
-            mCurrentRotation = v; //保存最新的方向信息
+            mCurrentRotation = orientation; //保存最新的方向信息
             if (null != mMapboxMap) {
                 updatePositionMarker(null);
+            }
+
+            switch (accuracy) {
+                case SensorAccuracy.SENSOR_NO_CONTACT:
+                case SensorAccuracy.SENSOR_UNRELIABLE:
+                case SensorAccuracy.SENSOR_ACCURACY_LOW:
+                case SensorAccuracy.SENSOR_ACCURACY_MEDIUM:
+                    //可在低精度时添加提示用户校准的提示
+                    break;
+                case SensorAccuracy.SENSOR_ACCURACY_HIGH:
+                    break;
             }
         }
 

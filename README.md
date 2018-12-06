@@ -28,7 +28,7 @@ Add dependencies in `build.gradle` file of necessary modules:
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:0.3.13'
+	implementation 'com.mapxus.positioning:positioning:0.3.14'
 }
 ~~~
 
@@ -184,7 +184,7 @@ private MapxusPositioningListener listener = new MapxusPositioningListener() {
 		//if other errors happen, engine will be destroyed after error return; then you should re-instantiate IndoorLocatorClient; initialize before location successfully may lead to error returns;	}
 
 	@Override
-	public void onOrientationChange(float orientation, SensorAccuracy accuracy) {
+	public void onOrientationChange(float orientation, @SensorAccuracy int accuracy) {
 		//orientation change callback, value ranging [0, 360]; 0 due north, 90 east, 180 south, and 270 west;
 		//The accuracy parameter is the accuracy level of the current orientation. 
 		//You can tilt and move your phone like a 8-shape when the accuracy is not high
