@@ -12,25 +12,30 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.MarkerView;
-import com.mapbox.mapboxsdk.annotations.MarkerViewOptions;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapxus.map.MapViewProvider;
 import com.mapxus.map.MapxusMap;
 import com.mapxus.map.impl.MapboxMapViewProvider;
@@ -53,18 +58,30 @@ import com.mapxus.services.model.building.BuildingDetailResult;
 import com.mapxus.services.model.building.BuildingResult;
 import com.mapxus.services.model.building.IndoorBuildingInfo;
 
-import timber.log.Timber;
 
 public class PositionActivity extends BaseActivity implements View.OnClickListener {
 
+    private static final String TAG = "PositionActivity";
     private ActivityPositionBinding mPositionBinding;
+
+    /**
+     * 添加地圖图标的参数
+     */
+    private static final String POSITION_MARKER_SOURCE = "position_marker_source";
+    private static final String POSITION_MARKER_LAYER = "position_marker_layer";
+    private static final String POSITION_MARKER_IMAGE = "position_marker_image";
+
+    /**
+     * 添加地图图标的数据
+     */
+    private GeoJsonSource positionMarkerSource;
+    private SymbolLayer positionSymbolLayer;
 
     private MapboxMap mMapboxMap; //Mapbox Map
     private MapView mMapView;
 
     private MapxusMap mMapxusMap; //Mapxus Map
     private MapViewProvider mMapViewProvider;
-    private MarkerView mPositionMarkerView; //定位图标
 
     private MapxusPositioningClient mMapxusPositioningClient;//定位服务客户端
 
@@ -125,7 +142,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                                     updatePositionMarker(new LatLng(mPositionLocation.getLat(),
                                             mPositionLocation.getLon()));
                                 } else {
-                                    Timber.d("Floor change. Map floor is different from positioning floor, remove marker");
+                                    Log.d(TAG, "Floor change. Map floor is different from positioning floor, remove marker");
                                     removePositionMarker();
                                 }
                             }
@@ -138,7 +155,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                     public void onBuildingChange(IndoorBuilding indoorBuilding) {
                         if (null == indoorBuilding) {
                             mMapFloor = null;
-                            Timber.d("Map change to outdoor.");
+                            Log.d(TAG, "Map change to outdoor.");
                         }
                     }
                 });
@@ -159,7 +176,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         mPositionBinding.optionContent.setIsRunning(false);
         mPositionBinding.optionContent.version.setText("version: " + BuildConfig.VERSION_NAME);
         boolean isSupportGnss = Utils.isSupportGnss(this);
-        Timber.i("Is support gnss %s", isSupportGnss);
+        Log.i(TAG, "Is support gnss " + isSupportGnss);
         enableStartUI();
     }
 
@@ -184,6 +201,8 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                 enableStartUI();
                 stopPosition();
                 break;
+            default:
+                break;
         }
     }
 
@@ -206,7 +225,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         mMapxusPositioningClient.setPositioningOption(option); //配置定位参数，不配置则会使用默认参数开始定位
 
         mMapxusPositioningClient.start(); //开始定位
-        Timber.d("Call start()");
+        Log.d(TAG, "Call start()");
     }
 
     /**
@@ -217,7 +236,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         if (null != mMapxusPositioningClient) {
             removePositionMarker();
             mMapxusPositioningClient.pause();
-            Timber.d("Call pause()");
+            Log.d(TAG, "Call pause()");
         }
     }
 
@@ -229,7 +248,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         if (null != mMapxusPositioningClient) {
             showProgressDialog(R.string.get_current_location, R.string.please_wait);
             mMapxusPositioningClient.resume();
-            Timber.d("Call resume()");
+            Log.d(TAG, "Call resume()");
         }
     }
 
@@ -240,7 +259,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         if (null != mMapxusPositioningClient) {
             removePositionMarker();
             mMapxusPositioningClient.stop();
-            Timber.d("Call stop()");
+            Log.d(TAG, "Call stop()");
         }
     }
 
@@ -261,18 +280,18 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
             //定位过程中的各类状态返回
             switch (positioningState) {
                 case WAITING: //等待数据加载中
-                    Timber.i(">>>>> Waiting position....");
+                    Log.i(TAG, ">>>>> Waiting position....");
                     break;
                 case RUNNING: //定位成功，定位服务运行中
                     dismissProgressDialog();
                     mPositionBinding.optionContent.setIsRunning(true);
-                    Timber.i(">>>>> Start position");
+                    Log.i(TAG, ">>>>> Start position");
                     break;
                 case PAUSED: //定位服务暂停
                     mPositionBinding.optionContent.setIsRunning(false);
                     isShowInCenter = true;
                     mPositionLocation = null;
-                    Timber.i(">>>>> Pause position");
+                    Log.i(TAG, ">>>>> Pause position");
                     break;
                 case STOPPED:
                     mPositionBinding.optionContent.setIsRunning(false);
@@ -280,7 +299,9 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                     mMapxusPositioningClient = null;
                     mPositionLocation = null;
                     mMapxusPositioningClient = null;
-                    Timber.i(">>>>> Stop position");
+                    Log.i(TAG, ">>>>> Stop position");
+                    break;
+                default:
                     break;
             }
         }
@@ -294,7 +315,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         @Override
         public void onError(ErrorInfo errorInfo) {
             //定位过程中错误信息返回
-            Timber.e(errorInfo.getErrorMessage());
+            Log.e(TAG, errorInfo.getErrorMessage());
             if (errorInfo.getErrorCode() == ErrorInfo.WARNING) {
                 Toast.makeText(PositionActivity.this, errorInfo.getErrorMessage(), Toast.LENGTH_SHORT).show();
             } else {
@@ -336,6 +357,8 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                     break;
                 case SensorAccuracy.SENSOR_ACCURACY_HIGH:
                     break;
+                default:
+                    break;
             }
         }
 
@@ -350,12 +373,12 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         public void onLocationChange(PositioningLocation positioningLocation) {
             //定位的位置返回
             LatLng latLng = new LatLng(positioningLocation.getLat(), positioningLocation.getLon());
-            Timber.d("Positioning result %s", new Gson().toJson(positioningLocation));
+            Log.d("Positioning result %s", new Gson().toJson(positioningLocation));
             if (null != mMapxusMap) {
                 if (null != positioningLocation.getBuildingId() &&
                         (mPositionLocation == null || mPositionLocation.getBuildingId() == null
                                 || !positioningLocation.getBuildingId().equals(mPositionLocation.getBuildingId()))) {//building change
-                    Timber.d("Building change to %s", positioningLocation.getBuildingId());
+                    Log.d("Building change to %s", positioningLocation.getBuildingId());
                     mMapxusMap.switchBuilding(positioningLocation.getBuildingId());
                     mPositionBinding.optionContent.setIsIndoor(true);
                     isShowInCenter = true;
@@ -363,14 +386,14 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                 } else if (null == positioningLocation.getBuildingId() && mPositionBinding.optionContent.getIsIndoor()) { //change to outdoor
                     mPositionBinding.optionContent.setIsIndoor(false);
                     isShowInCenter = true;
-                    Timber.d("Location change to outdoor");
+                    Log.d(TAG, "Location change to outdoor");
                     Toast.makeText(PositionActivity.this, "Location change to outdoor", Toast.LENGTH_SHORT).show();
                 }
                 if (null != positioningLocation.getFloor() &&
                         (mPositionLocation == null || mPositionLocation.getFloor() == null ||
                                 !positioningLocation.getFloor().getId().equals(mPositionLocation.getFloor().getId()))) {
                     mMapxusMap.switchFloor(positioningLocation.getFloor().getCode());
-                    Timber.d("Floor change to %s", positioningLocation.getFloor().getCode());
+                    Log.d("Floor change to %s", positioningLocation.getFloor().getCode());
                 }
 
                 mPositionLocation = positioningLocation;
@@ -398,37 +421,46 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
      */
     private void updatePositionMarker(LatLng latLng) {
         if (null != latLng) {
-            if (null == mPositionMarkerView) {
-                createPosisionMarker(latLng);
+            if (null != positionMarkerSource) {
+                //更新经纬度
+                positionMarkerSource.setGeoJson(Feature.fromGeometry(Point.fromLngLat(latLng.getLongitude(),
+                        latLng.getLatitude())));
             } else {
-                ValueAnimator markerAnimator = ObjectAnimator.ofObject(mPositionMarkerView, "position",
-                        new LatLngEvaluator(), mPositionMarkerView.getPosition(), latLng);
-                markerAnimator.setDuration(500);
-                markerAnimator.start();
+                createPosisionMarker(latLng);
             }
         }
-        if (null != mPositionMarkerView) {
-            mPositionMarkerView.setRotation((float) (mCurrentRotation -
-                    mMapboxMap.getCameraPosition().bearing));
+        //更新角度
+        if (null != positionSymbolLayer) {
+            positionSymbolLayer.setProperties(PropertyFactory.iconRotate(mCurrentRotation));
         }
     }
 
     private void createPosisionMarker(LatLng latLng) {
-        mPositionMarkerView = mMapboxMap.addMarker(new MarkerViewOptions()
-                .icon(IconFactory.getInstance(this).fromResource(R.drawable.arrow))
-                .position(latLng).anchor(0.5f, 0.5f).rotation(mCurrentRotation));
-        mMapboxMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        removePositionMarker();
+        //添加定位图标
+        Bitmap positionImage = BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
+        mMapboxMap.getStyle().addImage(POSITION_MARKER_IMAGE, positionImage);
+        //添加数据
+        positionMarkerSource = new GeoJsonSource(POSITION_MARKER_SOURCE,
+                Feature.fromGeometry(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude())));
+        mMapboxMap.getStyle().addSource(positionMarkerSource);
+        //添加图标
+        positionSymbolLayer = new SymbolLayer(POSITION_MARKER_LAYER, POSITION_MARKER_SOURCE)
+                .withProperties(PropertyFactory.iconImage(POSITION_MARKER_IMAGE),
+                        PropertyFactory.iconRotate(mCurrentRotation),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconAllowOverlap(true));
+        mMapboxMap.getStyle().addLayer(positionSymbolLayer);
     }
 
     /**
      * 移除定位marker
      */
     private void removePositionMarker() {
-        if (null != mPositionMarkerView) {
-            mPositionMarkerView.remove();
-            Timber.d("Remove position marker");
-            mPositionMarkerView = null;
-        }
+        mMapboxMap.getStyle().removeSource(POSITION_MARKER_SOURCE);
+        mMapboxMap.getStyle().removeLayer(POSITION_MARKER_LAYER);
+        positionSymbolLayer = null;
+        positionMarkerSource = null;
     }
 
     /**
@@ -466,17 +498,17 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                 if (buildingDetailResult.status != 0) {
                     String msg = "Get building info failed " + buildingDetailResult.error.toString();
                     Toast.makeText(PositionActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    Timber.e(msg);
+                    Log.e(TAG, msg);
                     return;
                 }
                 if (buildingDetailResult.getIndoorBuildingInfo() == null) {
                     String msg = "Get building info failed: Building no found.";
                     Toast.makeText(PositionActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    Timber.e(msg);
+                    Log.e(TAG, msg);
                     return;
                 }
                 mPositionBuildingInfo = buildingDetailResult.getIndoorBuildingInfo();
-                Timber.d("Get building info of %s", mPositionBuildingInfo.getBuildingId());
+                Log.d("Get building info of %s", mPositionBuildingInfo.getBuildingId());
             }
         });
     }
@@ -505,7 +537,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                                         (mPositionBuildingInfo.getFloors()[i].getId(), floors[i]);
                                 mMapxusPositioningClient.changeFloor(positioningFloor);
                                 mMapxusMap.switchFloor(floors[i]);
-                                Timber.d("Change position floor to %s", floors[i]);
+                                Log.d(TAG, "Change position floor to " + floors[i]);
                             }
                         }
                     }).create().show();
@@ -534,6 +566,8 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                     item.setTitle(R.string.enable_background);
                     mMapxusPositioningClient.disableBackgroundPositioning(true);
                 }
+                break;
+            default:
                 break;
         }
         return super.onOptionsItemSelected(item);

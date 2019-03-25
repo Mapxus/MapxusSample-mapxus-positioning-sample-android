@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 0.4.0
+
+* Change authorization sever
+
 ### Version 0.3.14
 
 * Modify the interface that returns the orientation accuracy level

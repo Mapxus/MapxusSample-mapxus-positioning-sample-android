@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 0.4.0
+
+* 修改授权
+
 ### Version 0.3.14
 
 * 修改角度精度等级的返回接口

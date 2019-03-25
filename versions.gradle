@@ -7,8 +7,8 @@ versions.constraint_layout = "1.1.0"
 versions.junit = "4.12"
 versions.espresso = "3.0.1"
 versions.atsl_runner = "1.0.1"
-versions.beemap = "2.4.3"
-versions.positioning = "0.3.14"
+versions.beemap = "3.0.0"
+versions.positioning = "0.4.0"
 def deps = [:]
 
 def mapxus = [:]

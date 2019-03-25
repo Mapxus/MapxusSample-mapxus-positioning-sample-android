@@ -27,7 +27,7 @@ allprojects {
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:0.3.14'
+	implementation 'com.mapxus.positioning:positioning:0.4.0'
 }
 ~~~
 
@@ -119,6 +119,7 @@ startActivity(locationIntent);
 |    0.3.0 ~ 0.3.5        |  2.0.0-beta ~ 2.2.1-beta     |
 |    0.3.6				   |  2.3.3-beta                  |
 |    0.3.7及后续版本			|  2.4.1及后续版本              |
+|    0.4.0及后续版本       |   3.0.0及后续版本              |
 
 ## 2.获取室内定位
 
