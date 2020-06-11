@@ -2,19 +2,19 @@ package com.mapxus.positioningsample;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 /**
  * 基础Activity,运行权限检测
@@ -32,16 +32,14 @@ public class BaseActivity extends AppCompatActivity {
      */
     private String[] permissions = {
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-    }
+}
 
     @Override
     protected void onResume() {
@@ -119,19 +117,9 @@ public class BaseActivity extends AppCompatActivity {
         builder.setMessage(R.string.lacks_permission);
 
         // 拒绝, 退出应用
-        builder.setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
-        });
+        builder.setNegativeButton(R.string.quit, (dialog, which) -> finish());
 
-        builder.setPositiveButton(R.string.setting, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startAppSettings();
-            }
-        });
+        builder.setPositiveButton(R.string.setting, (dialog, which) -> startAppSettings());
 
         builder.setCancelable(false);
         builder.show();

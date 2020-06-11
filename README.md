@@ -1,13 +1,26 @@
-[API reference](https://mapxussample.github.io/MapxusSample-mapxus-positioning-sample-android/)
+# Overview
+Mapxus Positioning Android SDK allows you to do city-based seemless indoor-outdoor positioning.
 
-# Mapxus Positioning Android SDK Instruction
+[ ![Download](https://api.bintray.com/packages/jfrog/jfrog-jars/gradle-bintray-plugin/images/download.svg) ](https://bintray.com/jfrog/jfrog-jars/gradle-bintray-plugin/_latestVersion)
+
+# Table of Contents
+[Installation](#Installation)<br>
+[Access Location](#Access_Location)<br>
+
+<a name="Getting_Started"/>
+
+# Installation
+
+Remark: We **HIGHLY RECOMMEND** using the **latest stable version** of Android Studio (Android Studio 4.0 up to present) to build your application based on our mapxus anndroid SDKs.
+
+## Create a Project
+
+First of all, create a new Android project ([Instruction for creating an Android project](https://developer.android.com/studio/projects/create-project)). If you have already had an existing project, we highly recommend update Android Gradle Plugin.
 
 
-## 1. Create a Project
+If you are already using older version of mapxus positioning android SDK, please check the migration guide here.
 
-### 1.1 Create an Android Project
-
-First of all, create a new Android project ([Instruction for creating an Android project](https://developer.android.com/studio/projects/create-project)).Then, configure your project according to the following steps.
+Then, configure your project according to the following steps.
 
 ### 1.2 Configure the Project
 
@@ -133,7 +146,8 @@ startActivity(locationIntent);
 |    0.4.0 and above|  3.0.0 and above              |
 
 
-## 2.Access Indoor Location
+<a name="Access_Location"/>
+# Access Location
 
 ### 2.1 Examples
 

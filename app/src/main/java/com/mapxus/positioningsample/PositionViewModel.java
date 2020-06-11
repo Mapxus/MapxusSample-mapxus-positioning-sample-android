@@ -1,8 +1,8 @@
 package com.mapxus.positioningsample;
 
 
-import com.mapxus.services.BuildingSearch;
-import com.mapxus.services.model.DetailSearchOption;
+import com.mapxus.map.mapxusmap.api.services.BuildingSearch;
+import com.mapxus.map.mapxusmap.api.services.model.DetailSearchOption;
 
 public class PositionViewModel {
     /**

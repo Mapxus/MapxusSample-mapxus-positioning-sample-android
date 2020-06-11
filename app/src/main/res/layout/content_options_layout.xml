@@ -34,7 +34,7 @@
                 android:textSize="12sp"
                 android:layout_marginEnd="5dp"/>
 
-            <android.support.v7.widget.AppCompatSpinner
+            <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/location_mode_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -76,12 +76,12 @@
                 style="@style/position_button" />
             <Button
                 android:id="@+id/pause"
-                android:text="@string/pause"
-                style="@style/position_button"/>
+                style="@style/position_button"
+                android:text="@string/pause"/>
             <Button
                 android:id="@+id/resume"
-                android:text="@string/resume"
-                style="@style/position_button"/>
+                style="@style/position_button"
+                android:text="@string/resume"/>
             <Button
                 android:id="@+id/stop"
                 android:text="@string/stop"

@@ -8,7 +8,4 @@
     <item android:id="@+id/change_mode"
         android:title="@string/change_mode"/>
 
-    <item android:id="@+id/enable_background"
-        android:title="@string/enable_background"/>
-
 </menu>
