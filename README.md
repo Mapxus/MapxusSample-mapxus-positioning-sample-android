@@ -1,7 +1,7 @@
 # Overview
 Mapxus Positioning Android SDK allows you to do city-based seemless indoor-outdoor positioning.
 
-[ ![Download](https://api.bintray.com/packages/jfrog/jfrog-jars/gradle-bintray-plugin/images/download.svg) ](https://bintray.com/jfrog/jfrog-jars/gradle-bintray-plugin/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/mapxus/maven/positioning/images/download.svg) ](https://bintray.com/mapxus/maven/positioning/_latestVersion)
 
 # Table of Contents
 [Installation](#Installation)<br>

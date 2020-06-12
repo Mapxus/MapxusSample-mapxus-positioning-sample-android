@@ -1,5 +1,24 @@
 # Positioning SDK Change Log
 
+### Version 2.0.0
+
+#### Features🎉:
+* Support Android 9+
+* Much faster TTFF(Time to first fix)
+* Faster Floor Detection Response
+* Lifecycle Aware
+* Add java8 support
+* Aar size reduced about 40%, 250KB
+* Cut unnecessary permissions
+* Remove background positioning feature for user privacy concern
+
+#### Bug Fix🐞:
+* Fixed the strange location bouncing problem
+
+### Version 1.0.0
+
+* Change backend service url
+
 ### Version 0.4.0
 
 * Change authorization sever
