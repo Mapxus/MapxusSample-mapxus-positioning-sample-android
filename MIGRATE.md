@@ -1,7 +1,7 @@
 # Mapxus Positioning Android SDK Migration Guidance
 
 Mapxus positioning android sdk has a big major update since 2.0.0, 1.0.0 and less version sdk users are highly recommended to do this upgrade. Please follow the detailed guidance.  
-If you have any problem migrating to 2.0.0, please contact us <support@mapxus.com>. For more information of mapxus indoor location service, please check our website: [https://www.mapxus.com/](https://www.mapxus.com/).
+If you have any problem migrating to 2.x.x, please contact us <support@mapxus.com>. For more information of mapxus indoor location service, please check our website: [https://www.mapxus.com/](https://www.mapxus.com/).
 
 ## Introduction
 
@@ -28,7 +28,7 @@ Old version dependencies declaration:
 New version dependencies declaration:
 ```
 //mapxus
-"com.mapxus.positioning:positioning:2.0.0"
+"com.mapxus.positioning:positioning:2.0.1"
 
 ```
 

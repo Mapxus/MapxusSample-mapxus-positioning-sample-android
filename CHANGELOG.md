@@ -1,5 +1,10 @@
 # Positioning SDK Change Log
 
+### Version 2.0.1
+
+#### Bug Fix🐞:
+* Fixed cannot switch between indoor and outdoor problem.
+
 ### Version 2.0.0
 
 #### Features🎉:

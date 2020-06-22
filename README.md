@@ -62,7 +62,7 @@ Add dependency in `build.gradle` file of necessary modules:
 
 ~~~groovy
 dependencies {
-	implementation 'com.mapxus.positioning:positioning:2.0.0'
+	implementation 'com.mapxus.positioning:positioning:2.0.1'
 }
 ~~~
 
