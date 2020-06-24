@@ -11,7 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
-        versionName "3.0.0-rc.1"
+        versionName "3.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -49,7 +49,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     //添加mapxus sdk依赖
-    implementation 'com.mapxus.positioning:positioning:2.0.1'
+    implementation 'com.mapxus.positioning:positioning:2.0.2'
     implementation 'com.mapxus.map:mapxusmap:4.0.0'
 
     // Android Testing Support Library's runner and rules

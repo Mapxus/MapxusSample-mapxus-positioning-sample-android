@@ -1,5 +1,11 @@
 # Positioning SDK Change Log
 
+### Version 2.0.2
+
+#### Bug Fix🐞:
+* Fixed abnormal positioning accuracy problem when start positioning or switching indoor/outdoor.
+
+
 ### Version 2.0.1
 
 #### Bug Fix🐞:
