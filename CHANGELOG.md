@@ -1,5 +1,10 @@
 # Positioning SDK Change Log
 
+### Version 2.0.3
+#### Bug Fix🐞:
+* Fix abnormal compass reading problem
+* Fix some caching data problems
+
 ### Version 2.0.2
 
 #### Bug Fix🐞:
