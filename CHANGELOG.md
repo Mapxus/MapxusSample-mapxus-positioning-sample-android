@@ -1,5 +1,10 @@
 # Positioning SDK Change Log
 
+### Version 2.0.4
+#### Bug Fix🐞:
+* Fix PDR missing problem
+
+
 ### Version 2.0.3
 #### Bug Fix🐞:
 * Fix abnormal compass reading problem
