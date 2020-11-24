@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.0.6
+#### Bug Fix🐞:
+* Fix android resources' names conflict
+
 ### Version 2.0.5
 ### Features🎉:
 * Optimize compass accuracy
