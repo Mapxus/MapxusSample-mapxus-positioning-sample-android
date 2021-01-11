@@ -28,7 +28,7 @@ Old version dependencies declaration:
 New version dependencies declaration:
 ```
 //mapxus
-"com.mapxus.positioning:positioning:2.0.6"
+"com.mapxus.positioning:positioning:2.0.7"
 
 ```
 

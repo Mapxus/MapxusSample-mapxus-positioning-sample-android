@@ -5,11 +5,11 @@ def secretProperties = new Properties()
 secretProperties.load(new FileInputStream(secretPropertiesFile))
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.mapxus.positioningsample"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "3.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -49,7 +49,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     //添加mapxus sdk依赖
-    implementation 'com.mapxus.positioning:positioning:2.0.6'
+    implementation 'com.mapxus.positioning:positioning:2.0.7'
     implementation 'com.mapxus.map:mapxusmap:4.0.6'
 
     // Android Testing Support Library's runner and rules

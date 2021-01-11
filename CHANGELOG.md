@@ -1,5 +1,10 @@
 # Positioning SDK Change Log
 
+### Version 2.0.7
+### Bug Fix🐞:
+* Fix the problem of slow positioning response time when users are outdoors
+* Fix app crashes accidentally when network quality is poor
+
 ### Version 2.0.6
 #### Bug Fix🐞:
 * Fix android resources' names conflict
