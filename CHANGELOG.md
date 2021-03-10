@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.0.8
+### Bug Fix🐞:
+* Fix Wi-Fi scanning problem
+
 ### Version 2.0.7
 ### Bug Fix🐞:
 * Fix the problem of slow positioning response time when users are outdoors
