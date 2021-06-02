@@ -1,5 +1,10 @@
 # Positioning SDK Change Log
 
+### Version 2.0.9
+### Features🎉:
+* Optimize the performance of Indoor/Outdoor Detection
+* Change SDK download repository from jcenter(Deprecated) to MavenCentral
+
 ### Version 2.0.8
 ### Bug Fix🐞:
 * Fix Wi-Fi scanning problem
