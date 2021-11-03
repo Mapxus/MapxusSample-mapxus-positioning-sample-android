@@ -42,15 +42,15 @@ If you are already using older version of mapxus positioning android SDK, please
 Then, configure your project according to the following steps.
 
 
-#### Step1: Add jcenter repository
+#### Step1: Add mavenCentral repository
 
-Add jcenter repository to your root project's **build.gradle** file:
+Add mavenCentral repository to your root project's **build.gradle** file:
 
 ```grovvy
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
         ...
     }
 }

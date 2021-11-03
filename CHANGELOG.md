@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.1.0
+### Bug Fix🐞:
+* Fix Wifi filter logic bug in positioning sdk.
+
 ### Version 2.0.9
 ### Features🎉:
 * Optimize the performance of Indoor/Outdoor Detection
