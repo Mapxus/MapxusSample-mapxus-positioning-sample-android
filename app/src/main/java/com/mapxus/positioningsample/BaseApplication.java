@@ -12,7 +12,7 @@ public class BaseApplication extends Application {
         super.onCreate();
         //地图初始, 在AndroidManifest.xml中已配置appId跟secret的初始化方法
         MapxusMapContext.init(getApplicationContext());
-        MapxusMapContext.getMapServiceProvider().setDefaultStyle(Style.MAPXUS_V2);
+        MapxusMapContext.getMapServiceProvider().setDefaultStyle(Style.MAPXUS);
 
         //不配置xml文件，直接在代码中传入appId跟secret的初始化方法
         //MapxusMapContext.init(getApplicationContext(), "your appId", "your secret");

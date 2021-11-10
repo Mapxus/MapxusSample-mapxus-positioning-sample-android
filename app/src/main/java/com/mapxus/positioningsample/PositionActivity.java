@@ -29,6 +29,7 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapxus.map.mapxusmap.api.map.MapViewProvider;
 import com.mapxus.map.mapxusmap.api.map.MapxusMap;
+import com.mapxus.map.mapxusmap.api.map.MapxusMapZoomMode;
 import com.mapxus.map.mapxusmap.api.map.model.Style;
 import com.mapxus.map.mapxusmap.api.services.BuildingSearch;
 import com.mapxus.map.mapxusmap.api.services.model.building.BuildingDetailResult;
@@ -205,7 +206,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                         (PositionActivity.this.mapxusLocation == null || PositionActivity.this.mapxusLocation.getBuildingId() == null
                                 || !mapxusLocation.getBuildingId().equals(PositionActivity.this.mapxusLocation.getBuildingId()))) {//building change
                     Log.d("Building change to %s", mapxusLocation.getBuildingId());
-                    mMapxusMap.switchBuilding(mapxusLocation.getBuildingId());
+                    mMapxusMap.selectBuilding(mapxusLocation.getBuildingId(), MapxusMapZoomMode.ZoomDisable, null);
                     mPositionBinding.optionContent.setIsIndoor(true);
                     isShowInCenter = true;
                     queryBuildingInfo(mapxusLocation.getBuildingId()); //query building detail info
@@ -218,7 +219,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                 if (null != mapxusLocation.getMapxusFloor() &&
                         (PositionActivity.this.mapxusLocation == null || PositionActivity.this.mapxusLocation.getMapxusFloor() == null ||
                                 !mapxusLocation.getMapxusFloor().getId().equals(PositionActivity.this.mapxusLocation.getMapxusFloor().getId()))) {
-                    mMapxusMap.switchFloor(mapxusLocation.getMapxusFloor().getCode());
+                    mMapxusMap.selectFloor(mapxusLocation.getMapxusFloor().getCode(), MapxusMapZoomMode.ZoomDisable, null);
                     Log.d("Floor change to %s", mapxusLocation.getMapxusFloor().getCode());
                 }
 
@@ -484,9 +485,9 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                     builder.setItems(floors, (dialogInterface, i) -> {
                         if (mPositionBuildingInfo != null) {
                             MapxusFloor floor = new MapxusFloor
-                                    (mPositionBuildingInfo.getFloors()[i].getId(), mPositionBuildingInfo.getFloors()[i].getSequence(), floors[i]);
+                                    (mPositionBuildingInfo.getFloors().get(i).getId(), mPositionBuildingInfo.getFloors().get(i).getOrdinal(), floors[i]);
                             mMapxusPositioningClient.changeFloor(floor);
-                            mMapxusMap.switchFloor(floors[i]);
+                            mMapxusMap.selectFloor(floors[i], MapxusMapZoomMode.ZoomDisable, null);
                             Log.d(TAG, "Change position floor to " + floors[i]);
                         }
                     }).create().show();
@@ -507,9 +508,9 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     private String[] getFloors(IndoorBuildingInfo indoorBuildingInfo) {
-        String[] floors = new String[indoorBuildingInfo.getFloors().length];
-        for (int i = 0; i < indoorBuildingInfo.getFloors().length; i++) {
-            floors[i] = indoorBuildingInfo.getFloors()[i].getCode();
+        String[] floors = new String[indoorBuildingInfo.getFloors().size()];
+        for (int i = 0; i < indoorBuildingInfo.getFloors().size(); i++) {
+            floors[i] = indoorBuildingInfo.getFloors().get(i).getCode();
         }
         return floors;
     }

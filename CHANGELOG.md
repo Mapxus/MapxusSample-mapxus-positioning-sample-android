@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.1.1
+### Features🎉:
+* Update dependencies version.
+
 ### Version 2.1.0
 ### Bug Fix🐞:
 * Fix Wifi filter logic bug in positioning sdk.
