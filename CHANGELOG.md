@@ -1,5 +1,17 @@
 # Positioning SDK Change Log
 
+### Version 2.2.2
+#### Bug Fix🐞:
+* Prevent listeners will be registered repeatedly in the same application when use multiple activities.
+
+### Version 2.2.1
+#### Bug Fix🐞:
+* Fix sensor data collection calculations.
+
+### Version 2.2.0
+#### Features🎉:
+* Optimize the performance of indoor and outdoor switching.
+
 ### Version 2.1.1
 ### Features🎉:
 * Update dependencies version.
