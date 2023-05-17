@@ -1,5 +1,16 @@
 # Positioning SDK Change Log
 
+### Version 2.2.4
+#### Bug Fix🐞:
+* Fixed an issue where the location deviates significantly from the anomaly.
+
+### Version 2.2.3
+#### Features🎉:
+* Update GMS services version from 17.1.0 to 21.0.1.
+
+#### Bug Fix🐞:
+* Add "HIGH_SAMPLING_RATE_SENSORS" permission to support Android 12 and above.
+
 ### Version 2.2.2
 #### Bug Fix🐞:
 * Prevent listeners will be registered repeatedly in the same application when use multiple activities.
