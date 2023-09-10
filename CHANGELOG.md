@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.2.5
+#### Bug Fix🐞:
+* Fixed an NPE when service failed to stop properly.
+
 ### Version 2.2.4
 #### Bug Fix🐞:
 * Fixed an issue where the location deviates significantly from the anomaly.
