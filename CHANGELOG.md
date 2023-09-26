@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.2.6
+#### Features🎉:
+* Added error info callback in onErrorChange event when the sensor is missing.
+
 ### Version 2.2.5
 #### Bug Fix🐞:
 * Fixed an NPE when service failed to stop properly.
