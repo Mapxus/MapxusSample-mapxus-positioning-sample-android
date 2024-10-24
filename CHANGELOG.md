@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.2.7
+#### Bug Fix🐞:
+* Fix issues caused by Android Background Execution Limits.
+
 ### Version 2.2.6
 #### Features🎉:
 * Added error info callback in onErrorChange event when the sensor is missing.
