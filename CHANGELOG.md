@@ -1,5 +1,15 @@
 # Positioning SDK Change Log
 
+### Version 2.2.8
+#### Features🎉:
+* Added debugging mode support.
+
+#### Breaking 💥:
+* Update the user authentication system.
+* Change minSdkVersion from 21 and above(minSdkVersion >= 21) to 24 and above(minSdkVersion >= 24).
+
+***Note***：After the system update, some app ids may no longer be available, please contact us <support@mapxus.com> in time to update your app id.
+
 ### Version 2.2.7
 #### Bug Fix🐞:
 * Fix issues caused by Android Background Execution Limits.
