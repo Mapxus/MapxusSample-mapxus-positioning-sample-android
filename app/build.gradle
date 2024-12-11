@@ -8,7 +8,7 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.mapxus.positioningsample"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "3.0.0"
@@ -49,7 +49,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     //添加mapxus sdk依赖
-    implementation 'com.mapxus.positioning:positioning:2.2.8'
+    implementation 'com.mapxus.positioning:positioning:2.2.9'
     implementation 'com.mapxus.map:mapxusmap:5.2.2'
 
     // Android Testing Support Library's runner and rules

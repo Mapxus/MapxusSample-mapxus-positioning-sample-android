@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.2.9
+#### Bug Fix🐞:
+* Fixed an NPE issue when start positioning in an abnormal state, such as network disconnection, location not open, etc
+
 ### Version 2.2.8
 #### Features🎉:
 * Added debugging mode support.
