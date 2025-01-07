@@ -5,11 +5,11 @@ def secretProperties = new Properties()
 secretProperties.load(new FileInputStream(secretPropertiesFile))
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 34
     defaultConfig {
         applicationId "com.mapxus.positioningsample"
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 34
         versionCode 1
         versionName "3.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -39,22 +39,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'com.mapxus.positioningsample'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.material:material:1.12.0'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     //添加mapxus sdk依赖
     implementation 'com.mapxus.positioning:positioning:2.2.9'
-    implementation 'com.mapxus.map:mapxusmap:5.2.2'
+    implementation 'com.mapxus.map:mapxusmap:9.1.0'
 
     // Android Testing Support Library's runner and rules
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
     // Espresso UI Testing
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }

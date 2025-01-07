@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mapxus.positioningsample">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--定位需要用到的所有权限: -->
     <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->

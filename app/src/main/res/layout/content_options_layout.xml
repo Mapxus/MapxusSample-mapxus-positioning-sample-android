@@ -1,91 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
+
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="isIndoor"
-            type="boolean"/>
+            type="boolean" />
+
         <variable
             name="isRunning"
-            type="boolean"/>
+            type="boolean" />
     </data>
+
     <RelativeLayout
         android:id="@+id/option_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:id="@+id/version"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:textSize="12sp" />
 
         <LinearLayout
-            style="@style/option_linearLayout"
-            android:id="@+id/mode">
+            android:id="@+id/mode"
+            style="@style/option_linearLayout">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
+                android:layout_marginEnd="5dp"
                 android:text="@string/mode"
-                android:textSize="12sp"
-                android:layout_marginEnd="5dp"/>
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp" />
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/location_mode_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:background="@drawable/bg_spinner"
                 android:entries="@array/location_mode"
-                android:background="@drawable/bg_spinner"/>
+                android:textSize="12sp" />
 
         </LinearLayout>
 
         <LinearLayout
-            style="@style/option_linearLayout"
             android:id="@+id/indoor_layout"
+            style="@style/option_linearLayout"
             android:layout_below="@+id/mode"
             android:visibility="@{isRunning ?  View.VISIBLE : View.GONE}">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/isIndoor"
-                android:textColor="@color/colorPrimary"
-                android:text="@string/is_indoor"/>
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/is_indoor"
+                android:textColor="@color/colorPrimary" />
+
+            <TextView
                 android:id="@+id/indoor"
-                android:textColor="@color/colorPrimary"
-                android:text="@{isIndoor ? @string/true_txt : @string/false_txt}"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{isIndoor ? @string/true_txt : @string/false_txt}"
+                android:textColor="@color/colorPrimary" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/location_detail"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/indoor_layout"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="10sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="20dp"
+            android:gravity="center"
             android:weightSum="4">
+
             <Button
                 android:id="@+id/start"
-                android:text="@string/start"
-                style="@style/position_button" />
+                style="@style/position_button"
+                android:text="@string/start" />
+
             <Button
                 android:id="@+id/pause"
                 style="@style/position_button"
-                android:text="@string/pause"/>
+                android:text="@string/pause" />
+
             <Button
                 android:id="@+id/resume"
                 style="@style/position_button"
-                android:text="@string/resume"/>
+                android:text="@string/resume" />
+
             <Button
                 android:id="@+id/stop"
-                android:text="@string/stop"
-                style="@style/position_button"/>
+                style="@style/position_button"
+                android:text="@string/stop" />
         </LinearLayout>
 
 

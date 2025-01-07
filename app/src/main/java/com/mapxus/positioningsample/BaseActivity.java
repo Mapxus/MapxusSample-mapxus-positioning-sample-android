@@ -1,11 +1,9 @@
 package com.mapxus.positioningsample;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -30,7 +28,7 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 所有需要检测的权限
      */
-    private String[] permissions = {
+    private final String[] permissions = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
@@ -39,17 +37,15 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-}
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (Build.VERSION.SDK_INT >= 23 && getApplicationInfo().targetSdkVersion >= 23) {
-            if (lacksPermissions(permissions)) { //检测是否缺少权限
-                requestPermissions(permissions);
-            } else {
-                Log.d(TAG, "All Permissions Granted");
-            }
+        if (lacksPermissions(permissions)) { //检测是否缺少权限
+            requestPermissions(permissions);
+        } else {
+            Log.d(TAG, "All Permissions Granted");
         }
     }
 
@@ -80,9 +76,9 @@ public class BaseActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
     }
 
-    @TargetApi(23)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (!allPermissionsGranted(grantResults)) {
                 showMissingPermissionDialog();
@@ -95,8 +91,8 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * 判断是否所有的权限都已授予
      *
-     * @param grantResults
-     * @return
+     * @param grantResults result
+     * @return boolean
      */
     private boolean allPermissionsGranted(@NonNull int[] grantResults) {
         for (int grantResult : grantResults) {

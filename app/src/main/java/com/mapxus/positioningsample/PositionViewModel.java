@@ -7,8 +7,9 @@ import com.mapxus.map.mapxusmap.api.services.model.DetailSearchOption;
 public class PositionViewModel {
     /**
      * Search detail building info by building id
-     * @param buildingId
-     * @param buildingSearchResultListener
+     *
+     * @param buildingId                   id
+     * @param buildingSearchResultListener callback
      */
     public void searchBuildingById(String buildingId, BuildingSearch.BuildingSearchResultListener buildingSearchResultListener) {
         BuildingSearch buildingSearch = BuildingSearch.newInstance();
