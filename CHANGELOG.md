@@ -1,5 +1,19 @@
 # Positioning SDK Change Log
 
+### Version 2.3.0
+#### Features🎉:
+* Compatibility with shared floor data:
+    - `MapxusLocation` now includes `venueId`
+    - `MapxusFloor` now includes `type`.
+    - Add `FloorType` enum with `FLOOR` and `SHARED_FLOOR` values.
+* Enhancement of direction sensor.
+
+#### Bug Fix🐞:
+* Fix the bug in getOrdinal of `MapxusFloor`.
+* Fixed issues in `onError` callback.
+    - `ERROR_SERVER_EXCEPTION` (Error code: 107): Triggered when authentication fails.
+    - `WARNING` (Error code: 108): Triggered when indoor positioning fails (i.e., no matching indoor location found).
+
 ### Version 2.2.9
 #### Bug Fix🐞:
 * Fixed an NPE issue when start positioning in an abnormal state, such as network disconnection, location not open, etc

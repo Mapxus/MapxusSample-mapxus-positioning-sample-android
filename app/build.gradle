@@ -50,7 +50,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     //添加mapxus sdk依赖
-    implementation 'com.mapxus.positioning:positioning:2.2.9'
+    implementation 'com.mapxus.positioning:positioning:2.3.0'
     implementation 'com.mapxus.map:mapxusmap:9.1.0'
 
     // Android Testing Support Library's runner and rules
