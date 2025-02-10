@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.3.1
+#### Bug Fix🐞:
+* Fixed an issue where the buildingId and type properties of mapxusLocation were incorrectly set when resume positioning within a very short period.
+
 ### Version 2.3.0
 #### Features🎉:
 * Compatibility with shared floor data:
