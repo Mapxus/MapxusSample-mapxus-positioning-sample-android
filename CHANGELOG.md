@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.3.2 (2025-10-10)
+#### Enhance🎉:
+* Enhance the stability of Wi-Fi scanning and positioning.
+
 ### Version 2.3.1 (2025-02-10)
 #### Bug Fix🐞:
 * Fixed an issue where the buildingId and type properties of mapxusLocation were incorrectly set when resume positioning within a very short period.
