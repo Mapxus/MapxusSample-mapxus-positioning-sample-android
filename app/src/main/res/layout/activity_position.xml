@@ -11,7 +11,7 @@
         <include android:id="@+id/option_content"
             layout="@layout/content_options_layout"/>
 
-        <com.mapbox.mapboxsdk.maps.MapView
+        <org.maplibre.android.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

@@ -1,5 +1,9 @@
 # Positioning SDK Change Log
 
+### Version 2.3.3 (2025-12-26)
+#### Enhance🎉:
+* Enhance the stability of positioning to avoid crash.
+
 ### Version 2.3.2 (2025-10-10)
 #### Enhance🎉:
 * Enhance the stability of Wi-Fi scanning and positioning.

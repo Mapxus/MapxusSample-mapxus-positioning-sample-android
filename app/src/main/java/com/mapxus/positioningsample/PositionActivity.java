@@ -19,16 +19,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 
 import com.google.gson.Gson;
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapxus.map.mapxusmap.api.map.MapViewProvider;
 import com.mapxus.map.mapxusmap.api.map.MapxusMap;
 import com.mapxus.map.mapxusmap.api.map.MapxusMapZoomMode;
@@ -36,7 +26,7 @@ import com.mapxus.map.mapxusmap.api.services.BuildingSearch;
 import com.mapxus.map.mapxusmap.api.services.model.building.BuildingDetailResult;
 import com.mapxus.map.mapxusmap.api.services.model.building.FloorInfo;
 import com.mapxus.map.mapxusmap.api.services.model.building.IndoorBuildingInfo;
-import com.mapxus.map.mapxusmap.impl.MapboxMapViewProvider;
+import com.mapxus.map.mapxusmap.impl.MapLibreMapViewProvider;
 import com.mapxus.positioning.positioning.api.ErrorInfo;
 import com.mapxus.positioning.positioning.api.FloorType;
 import com.mapxus.positioning.positioning.api.MapxusFloor;
@@ -48,6 +38,17 @@ import com.mapxus.positioning.positioning.api.PositioningMode;
 import com.mapxus.positioning.positioning.api.PositioningState;
 import com.mapxus.positioning.positioning.api.SensorAccuracy;
 import com.mapxus.positioningsample.databinding.ActivityPositionBinding;
+
+import org.maplibre.android.camera.CameraUpdateFactory;
+import org.maplibre.android.geometry.LatLng;
+import org.maplibre.android.maps.MapLibreMap;
+import org.maplibre.android.maps.MapView;
+import org.maplibre.android.maps.Style;
+import org.maplibre.android.style.layers.PropertyFactory;
+import org.maplibre.android.style.layers.SymbolLayer;
+import org.maplibre.android.style.sources.GeoJsonSource;
+import org.maplibre.geojson.Feature;
+import org.maplibre.geojson.Point;
 
 
 public class PositionActivity extends BaseActivity implements View.OnClickListener {
@@ -68,7 +69,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     private GeoJsonSource positionMarkerSource;
     private SymbolLayer positionSymbolLayer;
 
-    private MapboxMap mMapboxMap; //Mapbox Map
+    private MapLibreMap mMapboxMap; //Mapbox Map
     private MapView mMapView;
 
     private MapxusMap mMapxusMap; //Mapxus Map
@@ -363,7 +364,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
      */
     private void initMap(Bundle savedInstanceState) {
         mMapView = mPositionBinding.map;
-        MapViewProvider mMapViewProvider = new MapboxMapViewProvider(this, mMapView);
+        MapViewProvider mMapViewProvider = new MapLibreMapViewProvider(this, mMapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(mapboxMap -> {
             mMapboxMap = mapboxMap; //获取地图准备好后的MapboxMap实例
