@@ -57,58 +57,58 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     private ActivityPositionBinding mPositionBinding;
 
     /**
-     * 添加地圖图标的参数
+     * Parameters for adding the map marker icon
      */
     private static final String POSITION_MARKER_SOURCE = "position_marker_source";
     private static final String POSITION_MARKER_LAYER = "position_marker_layer";
     private static final String POSITION_MARKER_IMAGE = "position_marker_image";
 
     /**
-     * 添加地图图标的数据
+     * Data for adding the map marker icon
      */
     private GeoJsonSource positionMarkerSource;
     private SymbolLayer positionSymbolLayer;
 
-    private MapLibreMap mMapboxMap; //Mapbox Map
+    private MapLibreMap mapLibreMap;
     private MapView mMapView;
 
-    private MapxusMap mMapxusMap; //Mapxus Map
+    private MapxusMap mMapxusMap;
 
-    private MapxusPositioningClient mMapxusPositioningClient;//定位服务客户端
+    private MapxusPositioningClient mMapxusPositioningClient;//Positioning service client
 
-    private float mCurrentRotation; //定位角度
-    private MapxusLocation mapxusLocation; //定位位置(包括floor、，buildingId, buildingId为空则定位到室外)
+    private float mCurrentRotation; //Positioning orientation angle
+    private MapxusLocation mapxusLocation; //Positioning location (including floor and buildingId; if buildingId is empty, the location is outdoors)
 
-    private String mMapFloor; //当前地图的显示楼层
-    private IndoorBuildingInfo mPositionBuildingInfo; //定位建筑详细信息
-    private boolean isShowInCenter = true; //第一次显示切换地图中心点位置
+    private String mMapFloor; //The floor currently displayed on the map
+    private IndoorBuildingInfo mPositionBuildingInfo; //Detailed information of the positioning building
+    private boolean isShowInCenter = true; //Whether to move the map center to the location on first display
 
     private PositionViewModel mPositionViewModel;
 
 
     private ProgressDialog mProgressDialog;
     /**
-     * 定位状态、错误信息和定位结果返回监听
+     * Listener for positioning state, error information and positioning result
      */
     private final MapxusPositioningListener mMapxusPositioningListener = new MapxusPositioningListener() {
         /**
-         * 调用成功后状态返回对应
+         * After a successful call, the state changes accordingly
          * start() >>>>> RUNNING
          * pause() >>>>> PAUSED
          * resume()>>>>> RUNNING
          * stop()  >>>>> STOPPED
-         * @param positioningState 状态
+         * @param positioningState state
          */
         @Override
         public void onStateChange(PositioningState positioningState) {
-            //定位过程中的各类状态返回
+            //Various states returned during positioning
             switch (positioningState) {
-                case RUNNING: //定位成功，定位服务运行中
+                case RUNNING: //Positioning succeeded, positioning service running
                     dismissProgressDialog();
                     mPositionBinding.optionContent.setIsRunning(true);
                     Log.i(TAG, ">>>>> Start position");
                     break;
-                case PAUSED: //定位服务暂停
+                case PAUSED: //Positioning service paused
                     mPositionBinding.optionContent.setIsRunning(false);
                     isShowInCenter = true;
                     mapxusLocation = null;
@@ -126,14 +126,14 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         }
 
         /**
-         * WARNING: 为提示信息，出现此类信息仅为提示用户，不会销毁定位服务
-         * ERROR_***: 错误信息，出现错误信息定位服务也会销魂，须重新开始定位
-         * @param errorInfo 错误信息提示
+         * WARNING: informational message. Such messages only notify the user and will not destroy the positioning service
+         * ERROR_***: error message. When an error message occurs, the positioning service is also destroyed and positioning must be restarted
+         * @param errorInfo error information
          */
 
         @Override
         public void onError(ErrorInfo errorInfo) {
-            //定位过程中错误信息返回
+            //Error information returned during positioning
             Log.e(TAG, errorInfo.getErrorMessage());
             if (errorInfo.getErrorCode() == ErrorInfo.WARNING) {
                 Toast.makeText(PositionActivity.this, errorInfo.getErrorMessage(), Toast.LENGTH_SHORT).show();
@@ -146,7 +146,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                     new AlertDialog.Builder(PositionActivity.this).setTitle(R.string.error)
                             .setMessage(errorInfo.getErrorMessage()).setPositiveButton(R.string.ok,
                                     (dialogInterface, i) -> {
-                                        //定位服务未开启或者未开启高精度模式时跳转到设置界面开启
+                                        //When the location service is disabled or high-accuracy mode is off, jump to settings to enable it
                                         if (errorInfo.getErrorCode() == ErrorInfo.ERROR_LOCATION_SERVICE_DISABLED) {
                                             Intent locationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                                             startActivity(locationIntent);
@@ -158,9 +158,9 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
 
         @Override
         public void onOrientationChange(float orientation, @SensorAccuracy int accuracy) {
-            //手机朝向信息, 顺时针0-360
-            mCurrentRotation = orientation; //保存最新的方向信息
-            if (null != mMapboxMap) {
+            //Phone orientation information, clockwise 0-360
+            mCurrentRotation = orientation; //Save the latest orientation information
+            if (null != mapLibreMap) {
                 updatePositioningMarkerDirection(orientation);
             }
 
@@ -170,7 +170,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                 case SensorAccuracy.SENSOR_ACCURACY_LOW:
                 case SensorAccuracy.SENSOR_ACCURACY_MEDIUM:
                 case SensorAccuracy.SENSOR_ACCURACY_HIGH:
-                    //可在低精度时添加提示用户校准的提示
+                    //A calibration prompt can be shown to the user when accuracy is low
                     break;
                 default:
                     break;
@@ -178,15 +178,15 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         }
 
         /**
-         *  定位位置信息返回
-         *  室内：返回buildingId, floor, location
-         *  室外：buildingId == null, floor == null, 返回location
+         *  Positioning location information returned
+         *  Indoor: returns buildingId, floor, location
+         *  Outdoor: buildingId == null, floor == null, returns location
          * @param mapxusLocation location
          */
 
         @Override
         public void onLocationChange(MapxusLocation mapxusLocation) {
-            //定位的位置返回
+            //The positioning location returned
             if (mapxusLocation.getVenueId() == null) {
                 mPositionBinding.optionContent.locationDetail.setText(
                         "MapxusLocation(\n latitude=" + mapxusLocation.getLatitude() + ", longitude=" + mapxusLocation.getLongitude() +
@@ -242,7 +242,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
 
                 if (isShowInCenter) {
                     isShowInCenter = false;
-                    mMapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.5f)); //第一次显示将地图中心点移动到定位位置并放大
+                    mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.5f)); //On first display, move the map center to the location and zoom in
                 }
             }
         }
@@ -255,13 +255,13 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         mPositionBinding = DataBindingUtil.setContentView(this, R.layout.activity_position);
         mPositionViewModel = new PositionViewModel();
         initMap(savedInstanceState);
-        //可以在初始化时传入appId 和 secret 或者与地图初始化一样在AndroidManifest.xml 中配置
-        mMapxusPositioningClient = MapxusPositioningClient.getInstance(this, getApplicationContext()); //定位初始化，获取实例（已在AndroidManifest.xml中配置appId与secret）
+        //You can pass appId and secret during initialization, or configure them in AndroidManifest.xml like the map initialization
+        mMapxusPositioningClient = MapxusPositioningClient.getInstance(this, getApplicationContext()); //Positioning initialization, get instance (appId and secret already configured in AndroidManifest.xml)
         initView();
     }
 
     /**
-     * 设置控件监听
+     * Set control listeners
      */
     private void initView() {
         mPositionBinding.optionContent.optionLayout.bringToFront();
@@ -304,26 +304,26 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 开始定位，单次定位，第一次调用有效，其他状态中调用无效
-     * 重新定位须stop后重新初始化在调用
+     * Start positioning. Single positioning; only the first call is effective, calls in other states are ignored.
+     * To reposition, you must stop and re-initialize before calling again.
      */
     private void startPosition() {
         showProgressDialog(R.string.get_current_location, R.string.please_wait);
         String mode = mPositionBinding.optionContent.locationModeSpinner.getSelectedItem().toString();
-        mMapxusPositioningClient.addPositioningListener(mMapxusPositioningListener); //配置定位信息回调监听
+        mMapxusPositioningClient.addPositioningListener(mMapxusPositioningListener); //Configure the positioning callback listener
 
         MapxusPositioningOption option = new MapxusPositioningOption();
-        option.setPositioningMode(PositioningMode.fromString(mode)); //配置定位模式。不配置默认为Normal
+        option.setPositioningMode(PositioningMode.fromString(mode)); //Configure the positioning mode. Defaults to Normal if not configured
 
-        mMapxusPositioningClient.setPositioningOption(option); //配置定位参数，不配置则会使用默认参数开始定位
+        mMapxusPositioningClient.setPositioningOption(option); //Configure positioning parameters; if not configured, default parameters are used to start positioning
 
-        mMapxusPositioningClient.start(); //开始定位
+        mMapxusPositioningClient.start(); //Start positioning
         Log.d(TAG, "Call start()");
     }
 
     /**
-     * 暂停定位，不销毁恢复定位不需重新初始化数据
-     * 当且仅当定位服务正在运行中调用有效
+     * Pause positioning without destroying it. Resuming does not require re-initializing data.
+     * Only effective when the positioning service is running.
      */
     private void pausePosition() {
         if (null != mMapxusPositioningClient) {
@@ -334,8 +334,8 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 恢复定位
-     * 当且仅当定位服务在暂停状态中调用有效
+     * Resume positioning.
+     * Only effective when the positioning service is in the paused state.
      */
     private void resumePosition() {
         if (null != mMapxusPositioningClient) {
@@ -346,7 +346,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 停止定位，销毁定位引擎需重新初始化
+     * Stop positioning. The positioning engine is destroyed and must be re-initialized.
      */
     private void stopPosition() {
         if (null != mMapxusPositioningClient) {
@@ -357,8 +357,8 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 初始化地图
-     * 添加地图楼层变换监听
+     * Initialize the map
+     * Add a map floor change listener
      *
      * @param savedInstanceState savedInstanceState
      */
@@ -367,15 +367,15 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
         MapViewProvider mMapViewProvider = new MapLibreMapViewProvider(this, mMapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(mapboxMap -> {
-            mMapboxMap = mapboxMap; //获取地图准备好后的MapboxMap实例
+            mapLibreMap = mapboxMap; //Get the MapboxMap instance after the map is ready
         });
         mMapViewProvider.getMapxusMapAsync(mapxusMap -> {
-            mMapxusMap = mapxusMap; //获取室内地图准备好后的MapxusMap实例
-            //楼层变化时marker的显示
+            mMapxusMap = mapxusMap; //Get the MapxusMap instance after the indoor map is ready
+            //Display of the marker when the floor changes
             mMapxusMap.addOnFloorChangedListener((venue, indoorBuilding, floorInfo) -> {
                 mMapFloor = floorInfo == null ? null : floorInfo.getCode();
                 if (null != mapxusLocation && floorInfo != null) {
-                    //楼层不同则不显示定位图标
+                    //Do not show the positioning icon if the floors are different
                     if (mPositionBinding.optionContent.getIsIndoor()) {
                         if (null != mapxusLocation.getMapxusFloor() &&
                                 mMapFloor.equals(mapxusLocation.getMapxusFloor().getCode())) {
@@ -388,7 +388,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                     }
                 }
             });
-            //地图室内外切换时, 地图楼层重置为空
+            //When the map switches between indoor and outdoor, reset the map floor to null
             mMapxusMap.addOnBuildingChangeListener(indoorBuilding -> {
                 if (null == indoorBuilding) {
                     mMapFloor = null;
@@ -400,22 +400,22 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
 
 
     private void updatePositioningMarkerDirection(Float rotation) {
-        //更新角度
+        //Update the angle
         if (positionSymbolLayer != null) {
-            float finalRotation = (float) (rotation + (360 - mMapboxMap.getCameraPosition().bearing));
+            float finalRotation = (float) (rotation + (360 - mapLibreMap.getCameraPosition().bearing));
             positionSymbolLayer.setProperties(PropertyFactory.iconRotate(finalRotation));
         }
     }
 
     /**
-     * 修改maker的角度和经纬度
+     * Update the marker's angle and coordinates
      *
-     * @param latLng marker经纬度 latLng == null only update marker's rotation
+     * @param latLng marker coordinates; latLng == null only update marker's rotation
      */
     private void updatePositionMarker(LatLng latLng) {
         if (null != latLng) {
             if (null != positionMarkerSource) {
-                //更新经纬度
+                //Update coordinates
                 positionMarkerSource.setGeoJson(Feature.fromGeometry(Point.fromLngLat(latLng.getLongitude(),
                         latLng.getLatitude())));
             } else {
@@ -425,17 +425,17 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void createPositionMarker(LatLng latLng) {
-        Style style = mMapboxMap.getStyle();
+        Style style = mapLibreMap.getStyle();
         if (style != null) {
             removePositionMarker();
-            //添加定位图标
+            //Add the positioning icon
             Bitmap positionImage = BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
             style.addImage(POSITION_MARKER_IMAGE, positionImage);
-            //添加数据
+            //Add data
             positionMarkerSource = new GeoJsonSource(POSITION_MARKER_SOURCE,
                     Feature.fromGeometry(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude())));
             style.addSource(positionMarkerSource);
-            //添加图标
+            //Add the icon
             positionSymbolLayer = new SymbolLayer(POSITION_MARKER_LAYER, POSITION_MARKER_SOURCE)
                     .withProperties(PropertyFactory.iconImage(POSITION_MARKER_IMAGE),
                             PropertyFactory.iconRotate(mCurrentRotation),
@@ -446,19 +446,19 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 移除定位marker
+     * Remove the positioning marker
      */
     private void removePositionMarker() {
-        if (mMapboxMap.getStyle() != null) {
-            mMapboxMap.getStyle().removeSource(POSITION_MARKER_SOURCE);
-            mMapboxMap.getStyle().removeLayer(POSITION_MARKER_LAYER);
+        if (mapLibreMap.getStyle() != null) {
+            mapLibreMap.getStyle().removeSource(POSITION_MARKER_SOURCE);
+            mapLibreMap.getStyle().removeLayer(POSITION_MARKER_LAYER);
         }
         positionSymbolLayer = null;
         positionMarkerSource = null;
     }
 
     /**
-     * 通过 buildingId 查询建筑的详细信息
+     * Query the detailed information of a building by buildingId
      * Query indoorBuildingInfo to get all floors of positioning building
      *
      * @param buildingId id
@@ -521,7 +521,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
                 }
                 break;
             case R.id.change_mode:
-                //todo 定位过程中修改定位模式，此功能还未能使用
+                //todo Changing the positioning mode during positioning; this feature is not yet available
                 break;
             default:
                 break;
@@ -538,7 +538,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 未开始定位前时可点击的按钮变换
+     * Button state before positioning starts (clickable buttons)
      */
     private void enableStartUI() {
         mPositionBinding.optionContent.start.setEnabled(true);
@@ -548,7 +548,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * pause positioning 后可点击的按钮变换
+     * Clickable buttons after pausing positioning
      */
     private void enablePauseUI() {
         mPositionBinding.optionContent.start.setEnabled(false);
@@ -558,7 +558,7 @@ public class PositionActivity extends BaseActivity implements View.OnClickListen
     }
 
     /**
-     * 运行中可点击的按钮
+     * Clickable buttons while running
      */
     private void enableRunningUI() {
         mPositionBinding.optionContent.start.setEnabled(false);

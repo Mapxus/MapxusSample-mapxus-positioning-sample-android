@@ -9,9 +9,9 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        //地图初始, 在AndroidManifest.xml中已配置appId跟secret的初始化方法
+        //Map initialization. This init method is used when appId and secret are already configured in AndroidManifest.xml
         MapxusMapContext.init(getApplicationContext());
-        //不配置xml文件，直接在代码中传入appId跟secret的初始化方法
+        //Without configuring the xml file, pass appId and secret directly in code
         //MapxusMapContext.init(getApplicationContext(), "your appId", "your secret");
     }
 }

@@ -15,18 +15,18 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 /**
- * 基础Activity,运行权限检测
- * Android6.0及以上在获取危险权限时需要运行权限检测
+ * Base Activity that performs runtime permission checks.
+ * On Android 6.0 and above, runtime permission checks are required when requesting dangerous permissions.
  */
 
 public class BaseActivity extends AppCompatActivity {
 
     private static final String TAG = "BaseActivity";
 
-    private static final int PERMISSION_REQUEST_CODE = 0; // 系统权限管理页面的参数
+    private static final int PERMISSION_REQUEST_CODE = 0; // Parameter for the system permission management page
 
     /**
-     * 所有需要检测的权限
+     * All permissions that need to be checked
      */
     private final String[] permissions = {
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -42,7 +42,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (lacksPermissions(permissions)) { //检测是否缺少权限
+        if (lacksPermissions(permissions)) { //Check whether any permission is missing
             requestPermissions(permissions);
         } else {
             Log.d(TAG, "All Permissions Granted");
@@ -50,7 +50,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 判断权限集合所有权限是否授予
+     * Determine whether all permissions in the set are granted
      */
     public boolean lacksPermissions(String... permissions) {
         for (String permission : permissions) {
@@ -62,7 +62,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 判断是否缺少某个权限
+     * Determine whether a specific permission is missing
      */
     private boolean lacksPermission(String permission) {
         return ContextCompat.checkSelfPermission(BaseActivity.this, permission) ==
@@ -70,7 +70,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 权限检测
+     * Request permissions
      */
     private void requestPermissions(String... permissions) {
         ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
@@ -89,7 +89,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 判断是否所有的权限都已授予
+     * Determine whether all permissions have been granted
      *
      * @param grantResults result
      * @return boolean
@@ -105,14 +105,14 @@ public class BaseActivity extends AppCompatActivity {
 
 
     /**
-     * 提示缺失的权限信息
+     * Prompt information about the missing permissions
      */
     private void showMissingPermissionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
         builder.setTitle(R.string.help);
         builder.setMessage(R.string.lacks_permission);
 
-        // 拒绝, 退出应用
+        // Deny and quit the application
         builder.setNegativeButton(R.string.quit, (dialog, which) -> finish());
 
         builder.setPositiveButton(R.string.setting, (dialog, which) -> startAppSettings());
@@ -122,7 +122,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 启动应用的设置,手动设置权限
+     * Launch the application settings to grant permissions manually
      */
     private void startAppSettings() {
         Intent intent = new Intent(

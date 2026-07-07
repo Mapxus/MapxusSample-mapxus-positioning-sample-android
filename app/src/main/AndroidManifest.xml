@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--定位需要用到的所有权限: -->
-    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <!--All permissions required for positioning: -->
+    <!-- Get carrier information, used to support carrier-related interfaces -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- 用于进行网络定位 -->
+    <!-- Used for network-based positioning -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- 用于访问GPS定位 -->
+    <!-- Used for GPS positioning -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <!-- Used to access wifi network information, which is used for network-based positioning -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- 这个权限用于wifi扫描结果的获取权限，wifi信息会用来进行网络定位 -->
+    <!-- This permission is used to obtain wifi scan results, which are used for network-based positioning -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <!-- 访问网络，定位需要上网 -->
+    <!-- Access the network; positioning requires internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application

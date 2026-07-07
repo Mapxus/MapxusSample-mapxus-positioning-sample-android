@@ -14,7 +14,6 @@
     <string name="error">Error</string>
     <string name="ok">OK</string>
 
-    <!--定位模式-->
     <string-array name="location_mode">
         <item>Normal</item>
         <item>Normalwithwifithrottlingdisabled</item>
@@ -32,8 +31,8 @@
     <string name="note">Note</string>
     <string name="start_position_first">Please start positioning first.</string>
 
-    <string name="notification_title">Positioning后台定位功能</string>
-    <string name="notification_text">正在后台运行</string>
+    <string name="notification_title">Positioning Background Location</string>
+    <string name="notification_text">Running in the background</string>
 
     <string name="get_current_location">Getting current location...</string>
     <string name="please_wait">Please wait</string>
